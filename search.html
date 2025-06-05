@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Search</title>
+   <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/nLdZJ80H/mooov.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta8LxfdQfSnsiYVSCgKxIcnWZhprMofGnghRVlXv3rE5XQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />  
+  
+  <style>
+ 
+  .movie-card,h1{text-align:center}#search-button,body{color:#fff;font-family:Nunito,sans-serif}#search-button:hover,.movie-card:hover{transform:scale(1.05)}body{margin:0;padding:20px;background-color:#141414}.home-icon{display:flex;justify-content:center;margin:0;padding:0}.home-icon a{color:#fff;font-size:28px;margin:0;padding:0;text-decoration:none}.home-icon a:hover{color:#0ff}@media (max-width:768px){.home-icon{font-size:1.5em;margin-bottom:10px}}h1{margin-bottom:30px}#results{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:20px;padding:20px}.movie-card{background-color:#1f1f1f;border-radius:8px;overflow:hidden;transition:transform .3s}.movie-card img{width:100%;height:auto}.movie-card h3{font-size:16px;margin:10px 0 5px}.movie-card p{font-size:14px;margin:0 0 10px;color:#aaa}.search-box{max-width:600px;width:100%;margin:10px auto 5px;padding:2px;box-sizing:border-box}.search-controls{display:flex;flex-wrap:wrap;gap:10px}#category-toggle,#search-button,#search-input{min-width:0;box-sizing:border-box}#category-toggle{padding:.6rem;border-radius:8px;background:#222;color:#fff;border:1px solid #555}#search-input{flex:1;padding:.6rem 1rem;border-radius:8px;border:1px solid #555;background-color:#111;color:#fff}#search-results{background-color:#222;color:#fff;border-radius:5px;margin-top:5px;max-height:300px;overflow-y:auto}.search-result-item{padding:10px;border-bottom:1px solid #444;cursor:pointer}.search-result-item:hover{background-color:#333}#search-button{padding:.6rem 1.2rem;border-radius:12px;border:none;background-color:#00ffffff;cursor:pointer;transition:.3s;font-weight:600;box-shadow:0 2px 8px rgba(0,255,255,.1)}#search-button:hover{background-color:rgba(0,255,255)}@media (max-width:600px){.back-btn,.movie-card h3{font-size:14px}.spinner{border:8px solid #333;border-top:8px solid #0ff;border-radius:50%;width:60px;height:60px;animation:1s linear infinite spin;margin:50px auto}@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}.back-btn{background-color:#e50914;color:#fff;border:none;padding:10px 20px;border-radius:4px;cursor:pointer;margin-bottom:20px}.back-btn:hover{background-color:#f40612}#results{display:grid!important;grid-template-columns:repeat(2,1fr)!important;gap:15px!important;padding:20px 0!important;overflow-x:visible!important}.movie-card{max-width:none!important;width:100%!important}.movie-card p{font-size:12px}.search-controls{flex-direction:column}#category-toggle,#search-button,#search-input{width:100%}}
+
+
+
+  </style>
+</head>
+<body>
+
+ 
+  <h1></h1>
+   <div class="home-icon">
+        <a href="index">
+            <i class="fas fa-home"></i>
+        </a>
+    </div>
+
+   <div class="search-box">
+    <div class="search-controls">
+      <input
+        type="text"
+        id="search-input"
+        placeholder="Search for a movie or TV show..."
+      />
+      <select id="category-toggle">
+        <option value="movie">Movies</option>
+        <option value="tv">TV Shows</option>
+      </select>
+      <button id="search-button">Search</button>
+    </div>
+  </div>
+
+  <div id="spinner" class="spinner"></div>
+  <div id="results" style="display: none;"></div>
+  
+<button id="load-more" style="display:none; margin: 20px auto; padding: 10px 20px; background:#00ffff; color:#141414; border:none; border-radius:8px; cursor:pointer;">Load More</button>
+
+
+ 
+
+
+
+<script>
+// const API_KEY = ''; // REMOVE THIS LINE!
+
+// IMPORTANT: Replace with the actual URL of your deployed Cloudflare Worker.
+// It should be something like 'https://your-worker-name.your-username.workers.dev/'
+const _0x3374fc=_0x17f5;(function(_0x236208,_0x56f7ff){const _0x3a0346=_0x17f5,_0x162d3f=_0x236208();while(!![]){try{const _0x1829ec=parseInt(_0x3a0346(0x9f))/0x1*(-parseInt(_0x3a0346(0xb4))/0x2)+parseInt(_0x3a0346(0x96))/0x3*(parseInt(_0x3a0346(0xbe))/0x4)+parseInt(_0x3a0346(0x97))/0x5+-parseInt(_0x3a0346(0x7a))/0x6+-parseInt(_0x3a0346(0xa4))/0x7*(parseInt(_0x3a0346(0xa7))/0x8)+parseInt(_0x3a0346(0x88))/0x9+parseInt(_0x3a0346(0xa5))/0xa;if(_0x1829ec===_0x56f7ff)break;else _0x162d3f['push'](_0x162d3f['shift']());}catch(_0x206784){_0x162d3f['push'](_0x162d3f['shift']());}}}(_0x4343,0x971b8));const WORKER_BASE_URL=_0x3374fc(0x86),resultsDiv=document[_0x3374fc(0x9e)](_0x3374fc(0xac)),spinner=document['getElementById'](_0x3374fc(0xbb)),searchInput=document[_0x3374fc(0x9e)](_0x3374fc(0x7c)),searchButton=document['getElementById'](_0x3374fc(0x79)),categoryToggle=document[_0x3374fc(0x9e)]('category-toggle'),loadMoreButton=document[_0x3374fc(0x9e)]('load-more');let currentPage=0x1,currentQuery='',currentCategory='',totalPages=0x1;function _0x4343(){const _0x299345=['then','1185453ToAlKk','pointer','/search/','</p>\x0a\x20\x20\x20\x20','length','Worker\x20Error\x20','createElement','location','block','style','grid','innerHTML','?query=','query','534648HWxMgq','2315815hGcRpV','get','div','<p>No\x20results\x20found\x20for\x20\x22','release_date','<p>Error\x20fetching\x20results.\x20Please\x20try\x20again.</p>','https://image.tmdb.org/t/p/w500','getElementById','1567PfSzcA','status','value','json','trim','7nEaueE','26659390gxgtht','click','8221264UcwMEF','N/A','total_pages','search','https://i.postimg.cc/d15mp6sz/Image-Not-Available.jpg','results','\x22>\x0a\x20\x20\x20\x20\x20\x20<h3>','pushState','catch','key','first_air_date','movie-card','category','980JTYBOC','Enter','movie?id=','appendChild','href','Fetch\x20error:','movie','spinner','&category=','text','8fayaHp','name','search-button','7216962kQfczH','addEventListener','search-input','\x22.</p>','forEach','substring','Fetching\x20from\x20Worker:','display','DOMContentLoaded','none','log','error','https://search.mooov.online'];_0x4343=function(){return _0x299345;};return _0x4343();}function _0x17f5(_0x482f94,_0xb8b576){const _0x4343e9=_0x4343();return _0x17f5=function(_0x17f583,_0x104a04){_0x17f583=_0x17f583-0x79;let _0x2896c3=_0x4343e9[_0x17f583];return _0x2896c3;},_0x17f5(_0x482f94,_0xb8b576);}function renderResults(_0x3235f1,_0x4f052a=![]){const _0x2481b1=_0x3374fc;!_0x4f052a&&(resultsDiv['innerHTML']='');if(!_0x3235f1[_0x2481b1(0xac)]||_0x3235f1[_0x2481b1(0xac)][_0x2481b1(0x8c)]===0x0){if(!_0x4f052a)resultsDiv['innerHTML']=_0x2481b1(0x9a)+currentQuery+_0x2481b1(0x7d);loadMoreButton[_0x2481b1(0x91)][_0x2481b1(0x81)]=_0x2481b1(0x83);return;}_0x3235f1[_0x2481b1(0xac)][_0x2481b1(0x7e)](_0x5790f5=>{const _0x3a263c=_0x2481b1,_0x1f6268=currentCategory==='movie'?_0x5790f5['title']:_0x5790f5[_0x3a263c(0xbf)],_0x2c35bd=_0x5790f5[_0x3a263c(0x9b)]||_0x5790f5[_0x3a263c(0xb1)]||_0x3a263c(0xa8),_0x21647b=_0x2c35bd!=='N/A'?_0x2c35bd[_0x3a263c(0x7f)](0x0,0x4):_0x3a263c(0xa8),_0x551471=_0x5790f5['poster_path']?_0x3a263c(0x9d)+_0x5790f5['poster_path']:_0x3a263c(0xab),_0x2a3958=document[_0x3a263c(0x8e)](_0x3a263c(0x99));_0x2a3958['className']=_0x3a263c(0xb2),_0x2a3958[_0x3a263c(0x91)]['cursor']=_0x3a263c(0x89),_0x2a3958[_0x3a263c(0x93)]='\x0a\x20\x20\x20\x20\x20\x20<img\x20src=\x22'+_0x551471+'\x22\x20alt=\x22'+_0x1f6268+_0x3a263c(0xad)+_0x1f6268+'</h3>\x0a\x20\x20\x20\x20\x20\x20<p>'+_0x2c35bd+_0x3a263c(0x8b),_0x2a3958[_0x3a263c(0x7b)](_0x3a263c(0xa6),()=>{const _0x3a86b1=_0x3a263c;window[_0x3a86b1(0x8f)][_0x3a86b1(0xb8)]=_0x3a86b1(0xb6)+_0x5790f5['id']+'&type='+currentCategory;}),resultsDiv[_0x3a263c(0xb7)](_0x2a3958);}),currentPage<totalPages?loadMoreButton[_0x2481b1(0x91)][_0x2481b1(0x81)]='block':loadMoreButton[_0x2481b1(0x91)][_0x2481b1(0x81)]=_0x2481b1(0x83);}function performSearch(_0x34429d,_0x5bba7f,_0x2c5eff=0x1,_0x454ef6=![]){const _0x295d9b=_0x3374fc;if(!_0x34429d[_0x295d9b(0xa3)]())return;spinner['style']['display']=_0x295d9b(0x90),resultsDiv[_0x295d9b(0x91)][_0x295d9b(0x81)]=_0x295d9b(0x92);const _0x34643d=WORKER_BASE_URL+_0x295d9b(0x8a)+_0x5bba7f+_0x295d9b(0x94)+encodeURIComponent(_0x34429d)+'&page='+_0x2c5eff+'&include_adult=false';console[_0x295d9b(0x84)](_0x295d9b(0x80),_0x34643d),fetch(_0x34643d)[_0x295d9b(0x87)](_0x2bb5cc=>{const _0x5dfe36=_0x295d9b;if(!_0x2bb5cc['ok'])return _0x2bb5cc[_0x5dfe36(0xbd)]()[_0x5dfe36(0x87)](_0x1d7711=>{const _0xebc9af=_0x5dfe36;throw new Error(_0xebc9af(0x8d)+_0x2bb5cc[_0xebc9af(0xa0)]+':\x20'+_0x1d7711);});return _0x2bb5cc[_0x5dfe36(0xa2)]();})[_0x295d9b(0x87)](_0x17af1c=>{const _0x40d0bd=_0x295d9b;spinner[_0x40d0bd(0x91)][_0x40d0bd(0x81)]=_0x40d0bd(0x83),totalPages=_0x17af1c[_0x40d0bd(0xa9)]||0x1,renderResults(_0x17af1c,_0x454ef6);})[_0x295d9b(0xaf)](_0x49a413=>{const _0x459cb6=_0x295d9b;spinner[_0x459cb6(0x91)]['display']='none';if(!_0x454ef6)resultsDiv[_0x459cb6(0x93)]=_0x459cb6(0x9c);console[_0x459cb6(0x85)](_0x459cb6(0xb9),_0x49a413),loadMoreButton[_0x459cb6(0x91)]['display']=_0x459cb6(0x83);});}window[_0x3374fc(0x7b)](_0x3374fc(0x82),()=>{const _0x522098=_0x3374fc,_0x264085=new URLSearchParams(window[_0x522098(0x8f)][_0x522098(0xaa)]),_0x46af47=_0x264085[_0x522098(0x98)](_0x522098(0x95)),_0x28a6c5=_0x264085['get'](_0x522098(0xb3))||_0x522098(0xba);_0x46af47&&(searchInput[_0x522098(0xa1)]=_0x46af47,categoryToggle[_0x522098(0xa1)]=_0x28a6c5,currentQuery=_0x46af47,currentCategory=_0x28a6c5,currentPage=0x1,performSearch(currentQuery,currentCategory,currentPage,![]));}),searchInput[_0x3374fc(0x7b)]('keypress',_0x1b713f=>{const _0xbd6d23=_0x3374fc;_0x1b713f[_0xbd6d23(0xb0)]===_0xbd6d23(0xb5)&&searchButton['click']();}),loadMoreButton[_0x3374fc(0x7b)](_0x3374fc(0xa6),()=>{currentPage<totalPages&&(currentPage++,performSearch(currentQuery,currentCategory,currentPage,!![]));}),searchButton[_0x3374fc(0x7b)](_0x3374fc(0xa6),()=>{const _0x2a10e8=_0x3374fc,_0x53203f=searchInput['value'][_0x2a10e8(0xa3)](),_0x39925a=categoryToggle[_0x2a10e8(0xa1)];if(!_0x53203f)return;currentQuery=_0x53203f,currentCategory=_0x39925a,currentPage=0x1;const _0x5ec5e8=_0x2a10e8(0x94)+encodeURIComponent(_0x53203f)+_0x2a10e8(0xbc)+_0x39925a;history[_0x2a10e8(0xae)]({},'',_0x5ec5e8),performSearch(currentQuery,currentCategory,currentPage,![]);});
+  
+</script>
+
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TV Shows</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/nLdZJ80H/mooov.png">
+  <style>
+ 
+body::after,body::before{content:"";top:0;left:0;height:100%;width:100%;position:fixed}.button-container,.movie-card,h1{text-align:center}#backToTopFloating,.back-btn{background-color:#0ff;color:#fff;cursor:pointer;transition:background-color .3s}body{margin:0;padding:20px;font-family:Nunito,sans-serif;background-color:#141414;color:#fff;position:relative;z-index:1}body::before{background-image:url('https://i.postimg.cc/52kKQK0P/netflix-image.jpg');background-size:cover;background-position:center;filter:blur(0px);z-index:-2}body::after{background:linear-gradient(to bottom,rgba(0,0,0,.7),rgba(20,20,20,.7));z-index:-1}h1{margin-bottom:30px;color:#fff}#buttonBar{display:flex;justify-content:center;gap:15px;margin-bottom:20px}.back-btn{border:none;padding:10px 20px;font-size:14px;border-radius:4px}#backToTopFloating:hover,.back-btn:hover{background-color:#0ff}#results{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:20px;padding:20px}.movie-card{background-color:#1f1f1f;border-radius:8px;overflow:hidden;transition:transform .3s}.movie-card:hover{transform:scale(1.05)}.movie-card img{width:100%;height:auto}.movie-card h3{font-size:16px;margin:10px 0 5px}.movie-card p{font-size:14px;margin:0 0 10px;color:#aaa}.spinner{border:8px solid #333;border-top:8px solid #0ff;border-radius:50%;width:60px;height:60px;animation:1s linear infinite spin;margin:50px auto}@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}.button-container{margin-top:20px}#backToTopFloating{position:fixed;bottom:20px;right:20px;display:none;border:none;padding:10px 15px;font-size:.9em;border-radius:5px}
+    
+  </style>
+</head>
+<body>
+
+  <h1>TV Shows</h1>
+
+  <div id="results"></div>
+  <div id="spinner" class="spinner" style="display:none;"></div>
+
+  <div class="button-container">
+    <button class="back-btn" onclick="loadMore()">Load More</button>
+  </div>
+
+  <button id="backToTopFloating" onclick="scrollToTop()">↑</button>
+
+
+
+   <script>
+        // Use your Cloudflare Worker URL here
+       
+function _0x452e(){const _0x48e16f=['poster_path','11XdLpmX','length','&type=','style','appendChild','/api/tv/popular?language=en-US&page=','block','back','createElement','add','backToTopFloating','10190930mCLBpj','1253328uTalJU','2LwYcDM','alt','7144856YssBat','documentElement','2392xcHBBV','href','scrollTop','smooth','location','json','display','name','1717413RiGspu','movie?id=','movie-card','https://tvshows.mooov.online','860725UoEzXh','forEach','results','textContent','classList','div','onclick','8182139MJyQdt','getElementById','https://image.tmdb.org/t/p/w500','30oDtpzC','src','first_air_date','28584ieZyiP'];_0x452e=function(){return _0x48e16f;};return _0x452e();}const _0x407ae3=_0x19a6;(function(_0x2caa58,_0x11bf81){const _0x2d78a5=_0x19a6,_0x3228b8=_0x2caa58();while(!![]){try{const _0x15800c=parseInt(_0x2d78a5(0x1c5))/0x1*(-parseInt(_0x2d78a5(0x1e5))/0x2)+parseInt(_0x2d78a5(0x1e4))/0x3+-parseInt(_0x2d78a5(0x1e7))/0x4+-parseInt(_0x2d78a5(0x1c9))/0x5*(-parseInt(_0x2d78a5(0x1d3))/0x6)+parseInt(_0x2d78a5(0x1d0))/0x7+parseInt(_0x2d78a5(0x1e9))/0x8*(parseInt(_0x2d78a5(0x1d6))/0x9)+parseInt(_0x2d78a5(0x1e3))/0xa*(parseInt(_0x2d78a5(0x1d8))/0xb);if(_0x15800c===_0x11bf81)break;else _0x3228b8['push'](_0x3228b8['shift']());}catch(_0x94f409){_0x3228b8['push'](_0x3228b8['shift']());}}}(_0x452e,0xdec54));const WORKER_BASE_URL=_0x407ae3(0x1c8),IMAGE_BASE_URL=_0x407ae3(0x1d2);function _0x19a6(_0x553715,_0x49b889){const _0x452ece=_0x452e();return _0x19a6=function(_0x19a61c,_0x5d2e33){_0x19a61c=_0x19a61c-0x1bf;let _0x3b649d=_0x452ece[_0x19a61c];return _0x3b649d;},_0x19a6(_0x553715,_0x49b889);}let currentPage=0x1;async function fetchMovies(_0x3439cb=0x1){const _0x50ceb5=_0x407ae3,_0x3a971f=document[_0x50ceb5(0x1d1)]('spinner');_0x3a971f[_0x50ceb5(0x1db)][_0x50ceb5(0x1c3)]=_0x50ceb5(0x1de);try{const _0x3d0f30=await fetch(WORKER_BASE_URL+_0x50ceb5(0x1dd)+_0x3439cb),_0x59f942=await _0x3d0f30[_0x50ceb5(0x1c2)]();displayMovies(_0x59f942['results']);}catch(_0x4820e4){console['error']('Error\x20fetching\x20movies:',_0x4820e4);}finally{_0x3a971f[_0x50ceb5(0x1db)][_0x50ceb5(0x1c3)]='none';}}function displayMovies(_0x26ccbb){const _0x3f5955=_0x407ae3,_0x348b22=document[_0x3f5955(0x1d1)](_0x3f5955(0x1cb));_0x26ccbb[_0x3f5955(0x1ca)](_0x51e6d6=>{const _0x30c9db=_0x3f5955,_0x23666a=document['createElement'](_0x30c9db(0x1ce));_0x23666a[_0x30c9db(0x1cd)][_0x30c9db(0x1e1)](_0x30c9db(0x1c7));const _0x4a7c91=document[_0x30c9db(0x1e0)]('img');_0x4a7c91[_0x30c9db(0x1d4)]=_0x51e6d6[_0x30c9db(0x1d7)]?IMAGE_BASE_URL+_0x51e6d6[_0x30c9db(0x1d7)]:'https://i.postimg.cc/d15mp6sz/Image-Not-Available.jpg',_0x4a7c91[_0x30c9db(0x1e6)]=_0x51e6d6[_0x30c9db(0x1c4)];const _0x35755d=document[_0x30c9db(0x1e0)]('h3');_0x35755d[_0x30c9db(0x1cc)]=_0x51e6d6[_0x30c9db(0x1c4)];const _0x1885de=document[_0x30c9db(0x1e0)]('p');_0x1885de['textContent']=_0x51e6d6[_0x30c9db(0x1d5)],_0x23666a[_0x30c9db(0x1dc)](_0x4a7c91),_0x23666a[_0x30c9db(0x1dc)](_0x35755d),_0x23666a[_0x30c9db(0x1dc)](_0x1885de),_0x23666a[_0x30c9db(0x1cf)]=()=>{const _0x4d2f32=_0x30c9db,_0x4f3005='tv';window[_0x4d2f32(0x1c1)][_0x4d2f32(0x1ea)]=_0x4d2f32(0x1c6)+_0x51e6d6['id']+_0x4d2f32(0x1da)+_0x4f3005;},_0x348b22[_0x30c9db(0x1dc)](_0x23666a);});}function loadMore(){currentPage++,fetchMovies(currentPage);}function scrollToTop(){const _0x352376=_0x407ae3;window['scrollTo']({'top':0x0,'behavior':_0x352376(0x1c0)});}function goBack(){const _0xd44689=_0x407ae3;history[_0xd44689(0x1d9)]>0x1?history[_0xd44689(0x1df)]():alert('No\x20previous\x20page\x20in\x20history');}window['onscroll']=function(){const _0x421d9e=_0x407ae3,_0x527ed9=document[_0x421d9e(0x1d1)](_0x421d9e(0x1e2));document[_0x421d9e(0x1e8)][_0x421d9e(0x1bf)]>0x12c?_0x527ed9['style'][_0x421d9e(0x1c3)]=_0x421d9e(0x1de):_0x527ed9['style'][_0x421d9e(0x1c3)]='none';},fetchMovies();
+     
+    </script>
+
+
+</body>
+</html>
