@@ -912,30 +912,29 @@
          * @param {number|null} episode - The episode number (null for movies).
          */
         function renderPlayer(mediaId, season, episode) {
-            const playerContainer = document.getElementById("player");
-            let src;
-            if (type === "movie") {
-                // Movie player iframe URL format
-                src = `https://player.videasy.net/movie/${mediaId}`;
-            } else if (type === "tv" && season && episode) {
-                // TV show player iframe URL format
-                src = `https://player.videasy.net/tv/${mediaId}/${season}/${episode}`;
-            } else {
-                // Display message if no player is available (e.g., missing season/episode for TV)
-                playerContainer.innerHTML = "<p style='text-align: center; margin-top: 3rem;'>No player available for this selection.</p>";
-                return;
-            }
-            playerContainer.innerHTML = `
-                <iframe
-                    src="${src}"
-                    allowfullscreen
-                    allow="autoplay; encrypted-media"
-                    sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
-                    loading="lazy"
-                    referrerpolicy="no-referrer"
-                ></iframe>
-            `;
-        }
+    const playerContainer = document.getElementById("player");
+    let src;
+    if (type === "movie") {
+        src = `https://player.videasy.net/movie/${mediaId}`;
+    } else if (type === "tv" && season && episode) {
+        src = `https://player.videasy.net/tv/${mediaId}/${season}/${episode}`;
+    } else {
+        playerContainer.innerHTML = "<p style='text-align: center; margin-top: 3rem;'>No player available for this selection.</p>";
+        return;
+    }
+
+    playerContainer.innerHTML = `
+        <iframe
+            src="${src}"
+            allowfullscreen
+            allow="autoplay; encrypted-media"
+            /* ADDED 'allow-forms' and 'allow-modals' BELOW */
+            sandbox="allow-scripts allow-same-origin allow-presentation allow-popups allow-forms allow-modals"
+            loading="lazy"
+            referrerpolicy="no-referrer"
+        ></iframe>
+    `;
+}
 
         /**
          * Toggles the visibility of the side menu and its overlay.
