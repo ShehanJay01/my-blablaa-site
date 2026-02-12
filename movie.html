@@ -374,6 +374,34 @@
             border-radius: 6px;
             transition: background-color 0.2s ease, color 0.2s ease;
         }
+        /* Desktop Home Button Styling */
+.nav-home-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 1.2rem;
+    background-color: #111;
+    color: #00ffff; /* Cyan color */
+    border: 1px solid #555;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.nav-home-btn:hover {
+    background-color: #222;
+    border-color: #00ffff;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+/* Mobile ekedi meka hide wenna ona (Side menu eke thiyena nisa) */
+@media (max-width: 768px) {
+    .nav-home-btn {
+        display: none;
+    }
+}
 
         /* Active state for browse buttons */
         .browse-button.active {
@@ -632,6 +660,8 @@
                 font-size: clamp(0.4rem, 1vw + 0.2rem, 0.6rem);
                 margin-top: 3px; /* Smaller margin for mobile */
             }
+            
+            
         }
     </style>
 
@@ -641,15 +671,19 @@
     <button class="menu-toggle" onclick="toggleMenu()">☰</button>
 
     <div class="search-box desktop-only">
-        <div class="search-controls">
-            <input type="text" id="search-input" placeholder="Search for a movie or TV show..." />
-            <select id="category-toggle">
-                <option value="movie">Movies</option>
-                <option value="tv">TV Shows</option>
-            </select>
-            <button id="search-button">Search</button>
-        </div>
+    <div class="search-controls">
+        <a href="index" class="nav-home-btn" title="Home">
+            <i class="fas fa-home"></i>
+        </a>
+        
+        <input type="text" id="search-input" placeholder="Search for a movie or TV show..." />
+        <select id="category-toggle">
+            <option value="movie">Movies</option>
+            <option value="tv">TV Shows</option>
+        </select>
+        <button id="search-button">Search</button>
     </div>
+</div>
 
     <nav id="sideMenu" class="side-menu mobile-only">
         <div class="menu-header">Menu</div>
