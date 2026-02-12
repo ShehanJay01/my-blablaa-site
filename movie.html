@@ -911,7 +911,7 @@
          * @param {number|null} season - The season number (null for movies).
          * @param {number|null} episode - The episode number (null for movies).
          */
-        function renderPlayer(mediaId, season, episode) {
+       function renderPlayer(mediaId, season, episode) {
     const playerContainer = document.getElementById("player");
     let src;
     if (type === "movie") {
@@ -923,15 +923,15 @@
         return;
     }
 
+    // Sandbox attribute eka purawata ain kara
     playerContainer.innerHTML = `
         <iframe
             src="${src}"
             allowfullscreen
-            allow="autoplay; encrypted-media"
-            /* ADDED 'allow-forms' and 'allow-modals' BELOW */
-            sandbox="allow-scripts allow-same-origin allow-presentation allow-popups allow-forms allow-modals"
+            allow="autoplay; encrypted-media; picture-in-picture"
             loading="lazy"
             referrerpolicy="no-referrer"
+            style="width:100%; height:500px; border:none; border-radius:12px;"
         ></iframe>
     `;
 }
