@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TV Shows</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/nLdZJ80H/mooov.png">
+  <style>
+   body {
+  margin: 0;
+  padding: 20px;
+  font-family: Nunito, sans-serif;
+  background-color: #141414;
+  color: white;
+  position: relative;
+  z-index: 1;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('https://i.postimg.cc/52kKQK0P/netflix-image.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: blur(0px);
+  z-index: -2;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(20, 20, 20, 0.7));
+  z-index: -1;
+}
+
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: white;
+    }
+
+    #buttonBar {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .back-btn {
+      background-color: #00ffff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background-color: #00ffff;
+    }
+
+    #results {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .movie-card {
+      background-color: #1f1f1f;
+      border-radius: 8px;
+      overflow: hidden;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .movie-card:hover {
+      transform: scale(1.05);
+    }
+
+    .movie-card img {
+      width: 100%;
+      height: auto;
+    }
+
+    .movie-card h3 {
+      font-size: 16px;
+      margin: 10px 0 5px;
+    }
+
+    .movie-card p {
+      font-size: 14px;
+      margin: 0 0 10px;
+      color: #aaa;
+    }
+
+    .spinner {
+      border: 8px solid #333;
+      border-top: 8px solid #00ffff;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin: 50px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .button-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    #backToTopFloating {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: none;
+      background-color: #00ffff;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      font-size: 0.9em;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #backToTopFloating:hover {
+      background-color: #00ffff;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>TV Shows</h1>
+
+  <div id="results"></div>
+  <div id="spinner" class="spinner" style="display:none;"></div>
+
+  <div class="button-container">
+    <button class="back-btn" onclick="loadMore()">Load More</button>
+  </div>
+
+  <button id="backToTopFloating" onclick="scrollToTop()">↑</button>
+
+
+
+   <script>
+        // Use your Cloudflare Worker URL here
+        const WORKER_BASE_URL = 'https://tvshows.mooov.online'; // <<< IMPORTANT: Replace with your Worker URL
+        const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
+        let currentPage = 1;
+
+        async function fetchMovies(page = 1) {
+            const spinner = document.getElementById('spinner');
+            spinner.style.display = 'block';
+
+            try {
+                // Fetch from your Cloudflare Worker
+                const response = await fetch(`${WORKER_BASE_URL}/api/tv/popular?language=en-US&page=${page}`);
+                const data = await response.json();
+                displayMovies(data.results);
+            } catch (error) {
+                console.error('Error fetching movies:', error);
+            } finally {
+                spinner.style.display = 'none';
+            }
+        }
+
+        function displayMovies(movies) {
+            const results = document.getElementById('results');
+            movies.forEach(movie => {
+                const card = document.createElement('div');
+                card.classList.add('movie-card');
+
+                const img = document.createElement('img');
+                img.src = movie.poster_path
+                    ? IMAGE_BASE_URL + movie.poster_path
+                    : 'https://i.postimg.cc/d15mp6sz/Image-Not-Available.jpg';
+                img.alt = movie.name;
+
+                const title = document.createElement('h3');
+                title.textContent = movie.name;
+
+                const date = document.createElement('p');
+                date.textContent = movie.first_air_date;
+
+                card.appendChild(img);
+                card.appendChild(title);
+                card.appendChild(date);
+
+                // Set the redirect behavior on click
+                card.onclick = () => {
+                    const currentCategory = 'tv';
+                    window.location.href = `movie?id=${movie.id}&type=${currentCategory}`;
+                };
+
+                results.appendChild(card);
+            });
+        }
+
+        function loadMore() {
+            currentPage++;
+            fetchMovies(currentPage);
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function goBack() {
+            if (history.length > 1) {
+                history.back();
+            } else {
+                alert("No previous page in history");
+            }
+        }
+
+        window.onscroll = function () {
+            const btn = document.getElementById('backToTopFloating');
+            if (document.documentElement.scrollTop > 300) {
+                btn.style.display = 'block';
+            } else {
+                btn.style.display = 'none';
+            }
+        };
+
+        // Initial load
+        fetchMovies();
+    </script>
+
+
+</body>
+</html>
