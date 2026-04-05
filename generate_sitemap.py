@@ -2,8 +2,9 @@ import requests
 import os
 import xml.etree.ElementTree as ET
 import html
+from datetime import datetime
 
-# API URLs 4
+# API URLs
 API_CONFIG = [
     {"url": "https://stmap.mooov.online/movie/popular?language=en-US&page=1", "type": "movie"},
     {"url": "https://stmap.mooov.online/movie/top_rated?language=en-US&page=1", "type": "movie"},
@@ -15,64 +16,74 @@ BASE_URL = "https://mooov.online"
 SITEMAP_FILE = "sitemap.xml"
 
 def generate_sitemap():
+    today = datetime.now().strftime('%Y-%m-%d')
+    url_date_map = {} # URL එක සහ එහි දිනය තබා ගැනීමට
+
     try:
-        existing_urls = set()
-        # 1
+        # 1. පරණ සයිට්මැප් එක කියවා දැනට තියෙන දින ලබා ගැනීම
         if os.path.exists(SITEMAP_FILE):
             try:
                 tree = ET.parse(SITEMAP_FILE)
                 root = tree.getroot()
                 ns = {'ns': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
-                for loc in root.findall('.//ns:loc', ns):
-                    # 
-                    clean_url = html.unescape(loc.text)
-                    existing_urls.add(clean_url)
-            except Exception:
-                print("Old sitemap had errors. Starting fresh.")
+                for url_tag in root.findall('ns:url', ns):
+                    loc = url_tag.find('ns:loc', ns).text
+                    lastmod = url_tag.find('ns:lastmod', ns)
+                    
+                    clean_url = html.unescape(loc)
+                    # පරණ දිනය තිබේ නම් එය ගමු, නැතිනම් අද දිනය ගමු
+                    if lastmod is not None:
+                        url_date_map[clean_url] = lastmod.text
+                    else:
+                        url_date_map[clean_url] = today
+            except Exception as e:
+                print(f"Error parsing old sitemap: {e}")
 
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-            "Accept": "application/json"
-        }
+        # 2. API එකෙන් අලුත් දත්ත ලබා ගැනීම
+        headers = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
         
-        existing_urls.add(f"{BASE_URL}/")
+        # Homepage එක අනිවාර්යයි
+        homepage = f"{BASE_URL}/"
+        if homepage not in url_date_map:
+            url_date_map[homepage] = today
 
-        # 2. 
         for config in API_CONFIG:
-            print(f"Fetching {config['type']} data from: {config['url']}")
             try:
                 response = requests.get(config['url'], headers=headers)
                 response.raise_for_status()
                 data = response.json()
                 results = data.get('results', [])
-                
                 for item in results:
                     item_id = item.get('id')
                     if item_id:
-                        # 
                         item_url = f"{BASE_URL}/{config['type']}?id={item_id}&type={config['type']}"
-                        existing_urls.add(item_url)
-            except Exception as api_error:
-                print(f"Error fetching: {api_error}")
+                        # අලුත් URL එකක් නම් පමණක් අද දිනය දාමු
+                        if item_url not in url_date_map:
+                            url_date_map[item_url] = today
+            except Exception as e:
+                print(f"Fetch error: {e}")
 
-        print(f"Total unique URLs: {len(existing_urls)}")
-
-        # 3. 
+        # 3. XML ලිවීම
         sitemap_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
         sitemap_content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         
-        for url in sorted(existing_urls):
-            priority = "1.0" if url == f"{BASE_URL}/" or url == f"{BASE_URL}" else "0.8"
-            #
+        for url in sorted(url_date_map.keys()):
+            priority = "1.0" if url == homepage or url == f"{BASE_URL}" else "0.8"
             safe_url = html.escape(url)
-            sitemap_content += f'  <url>\n    <loc>{safe_url}</loc>\n    <priority>{priority}</priority>\n  </url>\n'
+            m_date = url_date_map[url]
+            
+            sitemap_content += '  <url>\n'
+            sitemap_content += f'    <loc>{safe_url}</loc>\n'
+            sitemap_content += f'    <lastmod>{m_date}</lastmod>\n'
+            sitemap_content += f'    <priority>{priority}</priority>\n'
+            sitemap_content += '  </url>\n'
         
         sitemap_content += '</urlset>'
 
         with open(SITEMAP_FILE, "w") as f:
             f.write(sitemap_content)
         
-        print("Sitemap successfully fixed and updated!")
+        print("Sitemap merged with historical dates successfully!")
 
     except Exception as e:
         print(f"General Error: {e}")
