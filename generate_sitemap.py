@@ -1,48 +1,79 @@
 import requests
 import os
+import xml.etree.ElementTree as ET
+from datetime import datetime
 
-API_URL = "https://stmap.mooov.online/movie/popular?language=en-US&page=1"
-BASE_URL = "https://mooov.online/movie"
+# API URLs 4ක් භාවිතා කරමු (Movies සහ TV Shows)
+API_CONFIG = [
+    {"url": "https://stmap.mooov.online/movie/popular?language=en-US&page=1", "type": "movie"},
+    {"url": "https://stmap.mooov.online/movie/top_rated?language=en-US&page=1", "type": "movie"},
+    {"url": "https://stmap.mooov.online/tv/popular?language=en-US&page=1", "type": "tv"},
+    {"url": "https://stmap.mooov.online/tv/top_rated?language=en-US&page=1", "type": "tv"}
+]
+
+BASE_URL = "https://mooov.online"
+SITEMAP_FILE = "sitemap.xml"
 
 def generate_sitemap():
     try:
-        # මෙන්න මේ headers ටික අනිවාර්යයෙන්ම එකතු කරන්න
+        # 1. දැනට පවතින සයිට්මැප් එකේ URLs ලබා ගැනීම
+        existing_urls = set()
+        if os.path.exists(SITEMAP_FILE):
+            try:
+                tree = ET.parse(SITEMAP_FILE)
+                root = tree.getroot()
+                ns = {'ns': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
+                for loc in root.findall('.//ns:loc', ns):
+                    existing_urls.add(loc.text)
+            except Exception as e:
+                print(f"Error reading existing sitemap: {e}")
+
+        # 2. API හරහා දත්ත ලබා ගැනීම
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "Accept": "application/json"
         }
         
-        print(f"Fetching data from: {API_URL}")
-        response = requests.get(API_URL, headers=headers) # headers මෙතනට දුන්නා
-        response.raise_for_status()
-        data = response.json()
-        
-        results = data.get('results', [])
-        print(f"Found {len(results)} movies.")
+        # Homepage එක අනිවාර්යයෙන්ම ඇතුළත් කිරීම
+        existing_urls.add(f"{BASE_URL}/")
 
-        if not results:
-            print("No movies found!")
-            return
+        for config in API_CONFIG:
+            print(f"Fetching {config['type']} data from: {config['url']}")
+            try:
+                response = requests.get(config['url'], headers=headers)
+                response.raise_for_status()
+                data = response.json()
+                results = data.get('results', [])
+                
+                for item in results:
+                    item_id = item.get('id')
+                    if item_id:
+                        # Movie එකක් නම් type=movie, TV Show එකක් නම් type=tv ලෙස URL එක සෑදීම
+                        item_url = f"{BASE_URL}/{config['type']}?id={item_id}&type={config['type']}"
+                        existing_urls.add(item_url)
+            except Exception as api_error:
+                print(f"Error fetching from {config['url']}: {api_error}")
 
+        print(f"Total unique URLs in sitemap after merge: {len(existing_urls)}")
+
+        # 3. XML ගොනුව නිර්මාණය කිරීම
         sitemap_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
         sitemap_content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-        sitemap_content += f'  <url><loc>https://mooov.online/</loc><priority>1.0</priority></url>\n'
-
-        for movie in results:
-            movie_id = movie.get('id')
-            url = f"{BASE_URL}?id={movie_id}&type=movie"
-            sitemap_content += f'  <url><loc>{url}</loc><priority>0.8</priority></url>\n'
+        
+        for url in sorted(existing_urls):
+            # Homepage එකට priority 1.0, අනෙක් ඒවාට 0.8
+            priority = "1.0" if url == f"{BASE_URL}/" else "0.8"
+            sitemap_content += f'  <url>\n    <loc>{url}</loc>\n    <priority>{priority}</priority>\n  </url>\n'
         
         sitemap_content += '</urlset>'
-        
-        with open("sitemap.xml", "w") as f:
+
+        with open(SITEMAP_FILE, "w") as f:
             f.write(sitemap_content)
         
-        if os.path.exists("sitemap.xml"):
-            print("sitemap.xml created successfully!")
-            
+        print("Sitemap updated with Movies and TV Shows successfully!")
+
     except Exception as e:
-        print(f"Error during sitemap generation: {e}")
+        print(f"General Error: {e}")
 
 if __name__ == "__main__":
     generate_sitemap()
