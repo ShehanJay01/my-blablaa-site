@@ -6,7 +6,7 @@ from datetime import datetime
 
 # API URLs
 API_CONFIG = [
-    {"url": "https://stmap.mooov.online/movie/popular?language=en-US&page=5", "type": "movie"},
+    {"url": "https://stmap.mooov.online/movie/popular?language=en-US&page=1", "type": "movie"},
     {"url": "https://stmap.mooov.online/movie/top_rated?language=en-US&page=1", "type": "movie"},
     {"url": "https://stmap.mooov.online/tv/popular?language=en-US&page=1", "type": "tv"},
     {"url": "https://stmap.mooov.online/tv/top_rated?language=en-US&page=1", "type": "tv"}
