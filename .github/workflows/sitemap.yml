@@ -2,20 +2,24 @@ name: Generate XML Sitemap
 
 on:
   schedule:
-    - cron: '0 0 * * *' # සෑම දිනකම මධ්‍යම රාත්‍රියේ run වේ
-  workflow_dispatch: # ඔබට අවශ්‍ය වෙලාවක manual run කිරීමට
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    # මෙන්න මේ කොටස ඇතුළත් කරන්න
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4 # v2 වෙනුවට v4 භාවිතා කරන්න (Node.js 24 support කරයි)
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v5 # v2 වෙනුවට v5 භාවිතා කරන්න
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.x' # 'python-code' වෙනුවට 'python-version' ලෙස නිවැරදි කරන්න
+          python-version: '3.x'
 
       - name: Install dependencies
         run: pip install requests
