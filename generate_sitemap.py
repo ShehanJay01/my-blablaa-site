@@ -17,10 +17,10 @@ SITEMAP_FILE = "sitemap.xml"
 
 def generate_sitemap():
     today = datetime.now().strftime('%Y-%m-%d')
-    url_date_map = {} # URL එක සහ එහි දිනය තබා ගැනීමට
+    url_date_map = {} # URL
 
     try:
-        # 1. පරණ සයිට්මැප් එක කියවා දැනට තියෙන දින ලබා ගැනීම
+        # 1.
         if os.path.exists(SITEMAP_FILE):
             try:
                 tree = ET.parse(SITEMAP_FILE)
@@ -31,7 +31,7 @@ def generate_sitemap():
                     lastmod = url_tag.find('ns:lastmod', ns)
                     
                     clean_url = html.unescape(loc)
-                    # පරණ දිනය තිබේ නම් එය ගමු, නැතිනම් අද දිනය ගමු
+                    # 
                     if lastmod is not None:
                         url_date_map[clean_url] = lastmod.text
                     else:
@@ -39,10 +39,10 @@ def generate_sitemap():
             except Exception as e:
                 print(f"Error parsing old sitemap: {e}")
 
-        # 2. API එකෙන් අලුත් දත්ත ලබා ගැනීම
+        # 2. 
         headers = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
         
-        # Homepage එක අනිවාර්යයි
+        # Homepage 
         homepage = f"{BASE_URL}/"
         if homepage not in url_date_map:
             url_date_map[homepage] = today
@@ -57,13 +57,13 @@ def generate_sitemap():
                     item_id = item.get('id')
                     if item_id:
                         item_url = f"{BASE_URL}/{config['type']}?id={item_id}&type={config['type']}"
-                        # අලුත් URL එකක් නම් පමණක් අද දිනය දාමු
+                        # URL
                         if item_url not in url_date_map:
                             url_date_map[item_url] = today
             except Exception as e:
                 print(f"Fetch error: {e}")
 
-        # 3. XML ලිවීම
+        # 3. XML 
         sitemap_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
         sitemap_content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         
