@@ -1,0 +1,31 @@
+name: Generate XML Sitemap
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # සෑම දිනකම මධ්‍යම රාත්‍රියේ run වේ
+  workflow_dispatch: # ඔබට අවශ්‍ය වෙලාවක manual run කිරීමට
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-code: '3.x'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run sitemap script
+        run: python generate_sitemap.py
+
+      - name: Commit and push if changed
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add sitemap.xml
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update sitemap" && git push)
