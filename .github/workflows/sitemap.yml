@@ -8,13 +8,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # මෙන්න මේ කොටස ඇතුළත් කරන්න
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -27,9 +29,15 @@ jobs:
       - name: Run sitemap script
         run: python generate_sitemap.py
 
-      - name: Commit and push if changed
+      - name: Commit and push changes
         run: |
-          git config --global user.name "GitHub Action"
-          git config --global user.email "action@github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add sitemap.xml
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update sitemap" && git push)
+          # මෙතනදී වෙනසක් තිබුණත් නැතත් commit එකක් බලෙන් කරන්න උත්සාහ කරයි
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-update sitemap [skip ci]"
+            git push origin main
+          fi
