@@ -3,7 +3,7 @@ import os
 import xml.etree.ElementTree as ET
 from datetime import datetime
 
-# API URLs 4ක් භාවිතා කරමු (Movies සහ TV Shows)
+# API URLs 4ක් (Movies සහ TV Shows)
 API_CONFIG = [
     {"url": "https://stmap.mooov.online/movie/popular?language=en-US&page=1", "type": "movie"},
     {"url": "https://stmap.mooov.online/movie/top_rated?language=en-US&page=1", "type": "movie"},
@@ -16,7 +16,6 @@ SITEMAP_FILE = "sitemap.xml"
 
 def generate_sitemap():
     try:
-        # 1. දැනට පවතින සයිට්මැප් එකේ URLs ලබා ගැනීම
         existing_urls = set()
         if os.path.exists(SITEMAP_FILE):
             try:
@@ -28,13 +27,11 @@ def generate_sitemap():
             except Exception as e:
                 print(f"Error reading existing sitemap: {e}")
 
-        # 2. API හරහා දත්ත ලබා ගැනීම
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "Accept": "application/json"
         }
         
-        # Homepage එක අනිවාර්යයෙන්ම ඇතුළත් කිරීම
         existing_urls.add(f"{BASE_URL}/")
 
         for config in API_CONFIG:
@@ -48,20 +45,19 @@ def generate_sitemap():
                 for item in results:
                     item_id = item.get('id')
                     if item_id:
-                        # Movie එකක් නම් type=movie, TV Show එකක් නම් type=tv ලෙස URL එක සෑදීම
-                        item_url = f"{BASE_URL}/{config['type']}?id={item_id}&type={config['type']}"
+                        # වැදගත්: XML වලදී & වෙනුවට &amp; භාවිතා කළ යුතුය
+                        item_url = f"{BASE_URL}/{config['type']}?id={item_id}&amp;type={config['type']}"
                         existing_urls.add(item_url)
             except Exception as api_error:
                 print(f"Error fetching from {config['url']}: {api_error}")
 
-        print(f"Total unique URLs in sitemap after merge: {len(existing_urls)}")
+        print(f"Total unique URLs: {len(existing_urls)}")
 
-        # 3. XML ගොනුව නිර්මාණය කිරීම
+        # XML ගොනුව නිවැරදිව ලිවීම
         sitemap_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
         sitemap_content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         
         for url in sorted(existing_urls):
-            # Homepage එකට priority 1.0, අනෙක් ඒවාට 0.8
             priority = "1.0" if url == f"{BASE_URL}/" else "0.8"
             sitemap_content += f'  <url>\n    <loc>{url}</loc>\n    <priority>{priority}</priority>\n  </url>\n'
         
@@ -70,7 +66,7 @@ def generate_sitemap():
         with open(SITEMAP_FILE, "w") as f:
             f.write(sitemap_content)
         
-        print("Sitemap updated with Movies and TV Shows successfully!")
+        print("Sitemap fixed and updated successfully!")
 
     except Exception as e:
         print(f"General Error: {e}")
