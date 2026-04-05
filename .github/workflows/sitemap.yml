@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4 # v2 වෙනුවට v4 භාවිතා කරන්න (Node.js 24 support කරයි)
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5 # v2 වෙනුවට v5 භාවිතා කරන්න
         with:
-          python-code: '3.x'
+          python-version: '3.x' # 'python-code' වෙනුවට 'python-version' ලෙස නිවැරදි කරන්න
 
       - name: Install dependencies
         run: pip install requests
