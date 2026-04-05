@@ -29,15 +29,20 @@ jobs:
       - name: Run sitemap script
         run: python generate_sitemap.py
 
+      - name: Run sitemap script
+        run: |
+          python generate_sitemap.py
+          ls -l # දැනට folder එකේ තියෙන files list එකක් පෙන්වන්න
+
       - name: Commit and push changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add sitemap.xml
-          # මෙතනදී වෙනසක් තිබුණත් නැතත් commit එකක් බලෙන් කරන්න උත්සාහ කරයි
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "Auto-update sitemap [skip ci]"
+          if [ -f sitemap.xml ]; then
+            git add sitemap.xml
+            git commit -m "Auto-update sitemap [skip ci]" || echo "No changes to commit"
             git push origin main
+          else
+            echo "sitemap.xml not found! Skipping commit."
+            exit 1
           fi
