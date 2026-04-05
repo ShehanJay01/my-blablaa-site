@@ -3,7 +3,7 @@ import os
 import xml.etree.ElementTree as ET
 import html
 
-# API URLs 4ක් (Movies සහ TV Shows)
+# API URLs 4
 API_CONFIG = [
     {"url": "https://stmap.mooov.online/movie/popular?language=en-US&page=1", "type": "movie"},
     {"url": "https://stmap.mooov.online/movie/top_rated?language=en-US&page=1", "type": "movie"},
@@ -17,14 +17,14 @@ SITEMAP_FILE = "sitemap.xml"
 def generate_sitemap():
     try:
         existing_urls = set()
-        # 1. පරණ එක කියවීමේදී සිදුවන XML Error එක මඟ හැරීම
+        # 1
         if os.path.exists(SITEMAP_FILE):
             try:
                 tree = ET.parse(SITEMAP_FILE)
                 root = tree.getroot()
                 ns = {'ns': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
                 for loc in root.findall('.//ns:loc', ns):
-                    # පරණ URL එකේ & තිබුනොත් එය සාමාන්‍ය & බවට පත් කර ගබඩා කරයි
+                    # 
                     clean_url = html.unescape(loc.text)
                     existing_urls.add(clean_url)
             except Exception:
@@ -37,7 +37,7 @@ def generate_sitemap():
         
         existing_urls.add(f"{BASE_URL}/")
 
-        # 2. API හරහා අලුත් දත්ත එකතු කිරීම
+        # 2. 
         for config in API_CONFIG:
             print(f"Fetching {config['type']} data from: {config['url']}")
             try:
@@ -49,7 +49,7 @@ def generate_sitemap():
                 for item in results:
                     item_id = item.get('id')
                     if item_id:
-                        # වැදගත්: මෙතැනදී සාමාන්‍ය URL එක සාදයි
+                        # 
                         item_url = f"{BASE_URL}/{config['type']}?id={item_id}&type={config['type']}"
                         existing_urls.add(item_url)
             except Exception as api_error:
@@ -57,13 +57,13 @@ def generate_sitemap():
 
         print(f"Total unique URLs: {len(existing_urls)}")
 
-        # 3. XML එක ලියන විට & ලකුණ &amp; බවට පත් කර ලිවීම
+        # 3. 
         sitemap_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
         sitemap_content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         
         for url in sorted(existing_urls):
             priority = "1.0" if url == f"{BASE_URL}/" or url == f"{BASE_URL}" else "0.8"
-            # escape කිරීමෙන් & ලකුණ &amp; බවට පත්වේ
+            #
             safe_url = html.escape(url)
             sitemap_content += f'  <url>\n    <loc>{safe_url}</loc>\n    <priority>{priority}</priority>\n  </url>\n'
         
