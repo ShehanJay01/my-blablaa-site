@@ -1,14 +1,19 @@
 import requests
 import os
 
-# ඔබේ අලුත් Worker URL එක මෙතනට නිවැරදිව ලබා දෙන්න
 API_URL = "https://stmap.mooov.online/movie/popular?language=en-US&page=1"
 BASE_URL = "https://mooov.online/movie"
 
 def generate_sitemap():
     try:
+        # මෙන්න මේ headers ටික අනිවාර්යයෙන්ම එකතු කරන්න
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "application/json"
+        }
+        
         print(f"Fetching data from: {API_URL}")
-        response = requests.get(API_URL)
+        response = requests.get(API_URL, headers=headers) # headers මෙතනට දුන්නා
         response.raise_for_status()
         data = response.json()
         
@@ -16,7 +21,7 @@ def generate_sitemap():
         print(f"Found {len(results)} movies.")
 
         if not results:
-            print("No movies found! Sitemap will not be created.")
+            print("No movies found!")
             return
 
         sitemap_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -30,15 +35,11 @@ def generate_sitemap():
         
         sitemap_content += '</urlset>'
         
-        # File එක write කිරීම
         with open("sitemap.xml", "w") as f:
             f.write(sitemap_content)
         
-        # ඇත්තටම file එක හැදුනාද කියා check කිරීම
         if os.path.exists("sitemap.xml"):
-            print("sitemap.xml created successfully in root directory!")
-        else:
-            print("Failed to create sitemap.xml file.")
+            print("sitemap.xml created successfully!")
             
     except Exception as e:
         print(f"Error during sitemap generation: {e}")
