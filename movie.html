@@ -592,6 +592,55 @@
             border-radius: 12px;
         }
 
+        /* Player wrapper for click shield */
+        .player-wrapper {
+            position: relative;
+            width: 100%;
+            margin-top: 3rem;
+        }
+
+        .player-wrapper iframe {
+            margin-top: 0;
+        }
+
+        /* Click shield - absorbs ad clicks */
+        .click-shield {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            cursor: pointer;
+            background: transparent;
+            border-radius: 12px;
+        }
+
+        .click-shield.disabled {
+            pointer-events: none;
+        }
+
+        /* Shield status indicator */
+        .shield-hint {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.75);
+            color: #00ffff;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            z-index: 101;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .shield-hint.show {
+            opacity: 1;
+        }
+
         /* Seasons horizontal scroll container */
         #seasons {
             margin-top: 2rem;
@@ -1032,18 +1081,45 @@
         return;
     }
 
-    // Sandbox attribute blocks popups, ad iframes, and unwanted navigations
+    // Wrap iframe in a container with a click shield to block ad clicks
     playerContainer.innerHTML = `
-        <iframe
-            src="${src}"
-            allowfullscreen
-
-            allow="autoplay; encrypted-media; picture-in-picture"
-            loading="lazy"
-            referrerpolicy="no-referrer"
-            style="width:100%; height:500px; border:none; border-radius:12px;"
-        ></iframe>
+        <div class="player-wrapper">
+            <div class="click-shield" id="clickShield"></div>
+            <div class="shield-hint" id="shieldHint">Ad blocked! Tap again to play ▶</div>
+            <iframe
+                src="${src}"
+                allowfullscreen
+                allow="autoplay; encrypted-media; picture-in-picture"
+                loading="lazy"
+                referrerpolicy="no-referrer"
+                style="width:100%; height:500px; border:none; border-radius:12px;"
+            ></iframe>
+        </div>
     `;
+
+    // Click shield logic
+    const shield = document.getElementById('clickShield');
+    const hint = document.getElementById('shieldHint');
+    let clickCount = 0;
+
+    shield.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        clickCount++;
+
+        // Show hint that ad was blocked
+        hint.classList.add('show');
+        setTimeout(() => hint.classList.remove('show'), 2000);
+
+        // After first click (ad absorbed), temporarily disable shield
+        // so user can interact with the real player
+        shield.classList.add('disabled');
+
+        // Re-enable shield after 4 seconds to catch next ad click
+        setTimeout(() => {
+            shield.classList.remove('disabled');
+        }, 4000);
+    });
 }
 
 // --- Ad Blocker: Remove rogue iframes & popups injected by the player ---
