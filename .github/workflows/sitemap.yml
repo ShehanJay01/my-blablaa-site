@@ -26,8 +26,6 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Run sitemap script
-        run: python generate_sitemap.py
 
       - name: Run sitemap script
         run: |
