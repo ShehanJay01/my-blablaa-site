@@ -1,5 +1,6 @@
 import requests
 import os
+import re
 import xml.etree.ElementTree as ET
 import html
 from datetime import datetime
@@ -56,7 +57,9 @@ def generate_sitemap():
                 for item in results:
                     item_id = item.get('id')
                     if item_id:
-                        item_url = f"{BASE_URL}/{config['type']}?id={item_id}&type={config['type']}"
+                        title = item.get('title') or item.get('name') or 'Unknown'
+                        seo_title = re.sub(r'[^a-z0-9]+', '-', title.lower()).strip('-')
+                        item_url = f"{BASE_URL}/movie?title={seo_title}&id={item_id}&type={config['type']}"
                         # URL
                         if item_url not in url_date_map:
                             url_date_map[item_url] = today

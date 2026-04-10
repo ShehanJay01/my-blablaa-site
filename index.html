@@ -3,8 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mooov - Your Movie Hub </title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Mooov - Your Movie Hub</title>
+    <!-- SEO Tags -->
+    <meta name="description" content="Your ultimate destination for movies and TV shows. Search, discover, and watch your favorite content online.">
+    <meta name="keywords" content="movies, tv shows, watch online, streaming, mooov, free movies, watch tv series">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://mooov.online/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Mooov - Your Movie Hub">
+    <meta property="og:description" content="Search, discover, and watch your favorite movies and TV shows.">
+    <meta property="og:image" content="https://i.postimg.cc/nLdZJ80H/mooov.png">
+    <meta property="og:url" content="https://mooov.online/">
+    <meta property="og:site_name" content="Mooov">
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Mooov - Your Movie Hub">
+    <meta property="twitter:description" content="Search, discover, and watch your favorite movies and TV shows.">
+    <meta property="twitter:image" content="https://i.postimg.cc/nLdZJ80H/mooov.png">
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Mooov",
+        "url": "https://mooov.online/",
+        "description": "Your ultimate destination for movies and TV shows.",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://mooov.online/search?query={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="icon" type="image/png" href="https://i.postimg.cc/nLdZJ80H/mooov.png">
@@ -618,6 +648,8 @@
         // Store current slide data for "Watch Now" button to link to details page
         slideshowWatchNowBtn.dataset.itemId = item.id;
         slideshowWatchNowBtn.dataset.itemType = item.media_type === 'tv' || item.first_air_date ? 'tv' : 'movie'; // Determine type for navigation
+        const itemTitle = item.title || item.name || 'Unknown Title';
+        slideshowWatchNowBtn.dataset.seoTitle = encodeURIComponent(itemTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
     }
 
     /**
@@ -651,12 +683,14 @@
         // Determine item type for the detail page link (movie or tv)
         const itemType = item.media_type === 'tv' || item.first_air_date ? 'tv' : 'movie';
         const itemId = item.id;
+        const itemTitle = item.title || item.name || 'Unknown Title';
+        const seoTitle = encodeURIComponent(itemTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
 
         const cardLink = document.createElement('a');
-        cardLink.href = `movie?id=${itemId}&type=${itemType}`; // Link to a generic movie/TV detail page and removed.html
+        cardLink.href = `movie?title=${seoTitle}&id=${itemId}&type=${itemType}`; // Link to a generic movie/TV detail page and removed.html
         cardLink.classList.add('card'); // Apply card styling to the anchor tag
         cardLink.innerHTML = `
-            <img src="${posterPath}" alt="${item.title || item.name || 'Poster'}" onerror="this.onerror=null;this.src='https://placehold.co/300x450/2d3748/e2e8f0?text=No+Poster';" />
+            <img src="${posterPath}" alt="${item.title || item.name || 'Poster'}" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/300x450/2d3748/e2e8f0?text=No+Poster';" />
             <div class="card-title">${item.title || item.name || 'Unknown Title'}</div>
         `;
         container.appendChild(cardLink);
@@ -693,9 +727,10 @@
     slideshowWatchNowBtn.addEventListener('click', () => {
         const itemId = slideshowWatchNowBtn.dataset.itemId;
         const itemType = slideshowWatchNowBtn.dataset.itemType;
+        const seoTitle = slideshowWatchNowBtn.dataset.seoTitle;
         if (itemId && itemType) {
             // Redirect to a detail page with the item ID and type
-            window.location.href = `movie?id=${itemId}&type=${itemType}`; //removed .html
+            window.location.href = `movie?title=${seoTitle}&id=${itemId}&type=${itemType}`; //removed .html
         } else {
             console.warn("No movie/TV show loaded for 'Watch Now' button.");
         }
@@ -823,5 +858,11 @@
     // Ensure the DOM is fully loaded before running the initialization function
     document.addEventListener('DOMContentLoaded', initializeHomepage);
 </script>
+
+    <!-- Footer -->
+    <footer style="background-color: #111; padding: 20px 0; text-align: center; color: #555; font-size: 0.85rem; margin-top: 40px; border-top: 1px solid #222;">
+        <p style="margin: 0;">© 2026 <a href="index" style="color: #00ffff; text-decoration: none;">Mooov</a>. All rights reserved.</p>
+        <p style="margin: 5px 0 0;"><a href="movies" style="color: #888; text-decoration: none; margin: 0 10px;">Movies</a> | <a href="tvshows" style="color: #888; text-decoration: none; margin: 0 10px;">TV Shows</a></p>
+    </footer>
 </body>
 </html>

@@ -4,6 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Watch Now</title>
+    <!-- Default SEO Tags (will be updated dynamically) -->
+    <meta name="description" content="Watch your favorite movies and TV shows.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://mooov.online/movie">
+    <meta property="og:type" content="video.movie">
+    <meta property="og:title" content="Watch Now - Mooov">
+    <meta property="og:description" content="Watch your favorite movies and TV shows online.">
+    <meta property="og:image" content="https://i.postimg.cc/nLdZJ80H/mooov.png">
+    <meta property="og:url" content="https://mooov.online/movie">
+    <meta property="og:site_name" content="Mooov">
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Watch Now - Mooov">
+    <meta property="twitter:description" content="Watch your favorite movies and TV shows online.">
+    <meta property="twitter:image" content="https://i.postimg.cc/nLdZJ80H/mooov.png">
+    <!-- JSON-LD Structured Data (updated dynamically by JS) -->
+    <script type="application/ld+json" id="movie-jsonld">{}</script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta8LxfdQfSnsiYVSCgKxIcnWZhprMofGnghRVlXv3rE5XQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="icon" type="image/png" href="https://i.postimg.cc/nLdZJ80H/mooov.png">
@@ -235,10 +251,9 @@
         /* Movie title styling */
         .movie-info h1 {
             margin-top: 0;
-            font-size: 3rem;
             font-weight: bold;
             margin: 0 0 0.5rem 0;
-            font-size: 2.5rem; /* Adjusted for better fit */
+            font-size: 2.5rem;
         }
 
         /* Hide/show elements based on device (desktop vs. mobile) */
@@ -695,13 +710,13 @@
 
         <div class="menu-header">Browse</div>
         <div class="browse-buttons">
-            <button class="browse-button active" data-category="movie"></i> Movies</button>
-            <button class="browse-button" data-category="tv"></i> TV Shows</button>
+            <button class="browse-button active" data-category="movie">Movies</button>
+            <button class="browse-button" data-category="tv">TV Shows</button>
         </div>
 
         <div class="search-section-menu">
             <input type="search" id="menu-search-input" placeholder="Browse Movies" />
-            <button id="menu-search-button"><i class="aresp search-resp"></i></button>
+            <button id="menu-search-button"><i class="fas fa-search"></i></button>
         </div>
         <div class="menu-watermark">S H E H A N J</div>
     </nav>
@@ -728,7 +743,7 @@
                 </div>
             </div>
             <div class="poster">
-                <img id="poster" src="" alt="Poster" />
+                <img id="poster" src="" alt="Movie Poster" loading="lazy" />
             </div>
         </div>
 
@@ -776,9 +791,47 @@
                     fullTitle += ` (${year})`;
                 }
                 document.getElementById("title").textContent = fullTitle;
+                
+                // Update SEO Meta Tags Dynamically
+                const overviewText = decodeHTML(data.overview || "Watch this amazing title online.");
+                document.title = `${fullTitle} - Mooov`;
+                document.querySelector('meta[name="description"]')?.setAttribute('content', overviewText);
+                document.querySelector('meta[property="og:title"]')?.setAttribute('content', `${fullTitle} - Mooov`);
+                document.querySelector('meta[property="og:description"]')?.setAttribute('content', overviewText);
+                document.querySelector('meta[property="twitter:title"]')?.setAttribute('content', `${fullTitle} - Mooov`);
+                document.querySelector('meta[property="twitter:description"]')?.setAttribute('content', overviewText);
+                if (data.poster) {
+                    document.querySelector('meta[property="og:image"]')?.setAttribute('content', data.poster);
+                    document.querySelector('meta[property="twitter:image"]')?.setAttribute('content', data.poster);
+                }
+                // Update canonical URL
+                const seoSlug = (data.title || data.name || 'watch').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://mooov.online/movie?title=${seoSlug}&id=${id}&type=${type}`);
+                document.querySelector('meta[property="og:url"]')?.setAttribute('content', `https://mooov.online/movie?title=${seoSlug}&id=${id}&type=${type}`);
+
+                // Update JSON-LD Structured Data for rich results
+                const jsonLd = {
+                    "@context": "https://schema.org",
+                    "@type": type === 'movie' ? 'Movie' : 'TVSeries',
+                    "name": fullTitle,
+                    "description": overviewText,
+                    "image": data.poster || '',
+                    "url": `https://mooov.online/movie?title=${seoSlug}&id=${id}&type=${type}`,
+                    "genre": Array.isArray(data.genres) ? data.genres : [],
+                    "datePublished": data.releaseYear || '',
+                    "aggregateRating": data.vote_average ? {
+                        "@type": "AggregateRating",
+                        "ratingValue": data.vote_average,
+                        "bestRating": 10,
+                        "ratingCount": data.vote_count || 1
+                    } : undefined
+                };
+                // Remove undefined fields
+                Object.keys(jsonLd).forEach(key => jsonLd[key] === undefined && delete jsonLd[key]);
+                document.getElementById('movie-jsonld').textContent = JSON.stringify(jsonLd);
 
                 // Set overview
-                document.getElementById("overview").textContent = decodeHTML(data.overview || "");
+                document.getElementById("overview").textContent = overviewText;
 
                 // Set runtime (if available)
                 document.getElementById("runtime").textContent = data.runtime ? `Runtime: ${data.runtime}` : "";
@@ -1066,5 +1119,11 @@ searchInput.addEventListener('keypress', (e) => {
 
   
     </script>
+
+    <!-- Footer -->
+    <footer style="background-color: rgba(0,0,0,0.8); padding: 20px 0; text-align: center; color: #555; font-size: 0.85rem; margin-top: 40px; border-top: 1px solid #222; position: relative; z-index: 10;">
+        <p style="margin: 0;">&copy; 2026 <a href="index" style="color: #00ffff; text-decoration: none;">Mooov</a>. All rights reserved.</p>
+        <p style="margin: 5px 0 0;"><a href="movies" style="color: #888; text-decoration: none; margin: 0 10px;">Movies</a> | <a href="tvshows" style="color: #888; text-decoration: none; margin: 0 10px;">TV Shows</a></p>
+    </footer>
 </body>
 </html>
