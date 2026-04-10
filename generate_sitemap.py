@@ -5,13 +5,17 @@ import xml.etree.ElementTree as ET
 import html
 from datetime import datetime
 
-# API URLs
-API_CONFIG = [
-    {"url": "https://stmap.mooov.online/movie/popular?language=en-US&page=1", "type": "movie"},
-    {"url": "https://stmap.mooov.online/movie/top_rated?language=en-US&page=1", "type": "movie"},
-    {"url": "https://stmap.mooov.online/tv/popular?language=en-US&page=1", "type": "tv"},
-    {"url": "https://stmap.mooov.online/tv/top_rated?language=en-US&page=1", "type": "tv"}
-]
+# API URLs — Movies: pages 1-5, TV: page 1 only
+API_CONFIG = []
+
+# Movies: fetch pages 1-5 for more coverage
+for page in range(1, 6):
+    API_CONFIG.append({"url": f"https://stmap.mooov.online/movie/popular?language=en-US&page={page}", "type": "movie"})
+    API_CONFIG.append({"url": f"https://stmap.mooov.online/movie/top_rated?language=en-US&page={page}", "type": "movie"})
+
+# TV Shows: page 1 only
+API_CONFIG.append({"url": "https://stmap.mooov.online/tv/popular?language=en-US&page=1", "type": "tv"})
+API_CONFIG.append({"url": "https://stmap.mooov.online/tv/top_rated?language=en-US&page=1", "type": "tv"})
 
 BASE_URL = "https://mooov.online"
 SITEMAP_FILE = "sitemap.xml"
