@@ -1032,11 +1032,12 @@
         return;
     }
 
-    // Sandbox attribute 
+    // Sandbox attribute blocks popups, ad iframes, and unwanted navigations
     playerContainer.innerHTML = `
         <iframe
             src="${src}"
             allowfullscreen
+
             allow="autoplay; encrypted-media; picture-in-picture"
             loading="lazy"
             referrerpolicy="no-referrer"
@@ -1044,6 +1045,129 @@
         ></iframe>
     `;
 }
+
+// --- Ad Blocker: Remove rogue iframes & popups injected by the player ---
+(function blockAds() {
+    // Block window.open popups
+    const originalOpen = window.open;
+    window.open = function() {
+        console.log('[AdBlock] Popup blocked');
+        return null;
+    };
+
+    // List of known ad/tracker domains to block
+    const adDomains = [
+        'doubleclick.net', 'googlesyndication.com', 'adservice.google',
+        'ads.', 'adserver.', 'tracker.', 'popads.', 'popcash.',
+        'propellerads.', 'adsterra.', 'exoclick.', 'juicyads.',
+        'trafficjunky.', 'clickadu.', 'hilltopads.', 'a-ads.',
+        'ad.admitad.', 'adnxs.com', 'bidswitch.net', 'serving-sys.com',
+        'revenuehits.', 'adcash.', 'adf.ly', 'sh.st',
+        'linkbucks.', 'shorte.st', 'bongacams.', 'chaturbate.',
+        'livejas', 'streamate', 'cams.com'
+    ];
+
+    function isAdUrl(src) {
+        if (!src) return false;
+        const lower = src.toLowerCase();
+        return adDomains.some(domain => lower.includes(domain));
+    }
+
+    function isPlayerIframe(iframe) {
+        const playerContainer = document.getElementById('player');
+        return playerContainer && playerContainer.contains(iframe);
+    }
+
+    // Remove any iframe that's not our player
+    function cleanupIframes() {
+        document.querySelectorAll('iframe').forEach(iframe => {
+            // Skip our player iframe
+            if (isPlayerIframe(iframe)) return;
+
+            // Remove iframes injected outside the player
+            const src = iframe.src || iframe.getAttribute('src') || '';
+            // If it has no src, or has an ad domain, or is outside #player — remove it
+            if (!src || isAdUrl(src) || !isPlayerIframe(iframe)) {
+                console.log('[AdBlock] Removed rogue iframe:', src || '(no src)');
+                iframe.remove();
+            }
+        });
+    }
+
+    // Remove suspicious overlay elements (ads often create fixed/absolute positioned divs)
+    function cleanupOverlays() {
+        document.querySelectorAll('div, a').forEach(el => {
+            // Skip elements inside our known containers
+            if (el.closest('#player') || el.closest('.container') || el.closest('.side-menu') || 
+                el.closest('#splash') || el.closest('#menuOverlay') || el.closest('footer') ||
+                el.closest('.search-box') || el.closest('nav') || el.closest('main')) return;
+
+            const style = window.getComputedStyle(el);
+            const isFixed = style.position === 'fixed';
+            const isAbsolute = style.position === 'absolute';
+            const highZIndex = parseInt(style.zIndex) > 9000;
+
+            // If it's a fixed/absolute positioned element with high z-index added after page load
+            if ((isFixed || isAbsolute) && highZIndex && !el.id && !el.className.includes('menu') && !el.className.includes('overlay')) {
+                const src = el.querySelector('iframe, a[target="_blank"]');
+                if (src || el.tagName === 'A') {
+                    console.log('[AdBlock] Removed suspicious overlay:', el.tagName);
+                    el.remove();
+                }
+            }
+        });
+    }
+
+    // Watch for dynamically injected elements
+    const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            mutation.addedNodes.forEach(node => {
+                if (node.nodeType !== 1) return; // Only element nodes
+
+                // If an iframe was added outside the player, remove it
+                if (node.tagName === 'IFRAME' && !isPlayerIframe(node)) {
+                    console.log('[AdBlock] Blocked injected iframe:', node.src || '(no src)');
+                    node.remove();
+                    return;
+                }
+
+                // If a script tag with ad-related src is added, block it
+                if (node.tagName === 'SCRIPT') {
+                    const src = node.src || '';
+                    if (isAdUrl(src)) {
+                        console.log('[AdBlock] Blocked ad script:', src);
+                        node.remove();
+                        return;
+                    }
+                }
+
+                // Check for iframes within added containers
+                if (node.querySelectorAll) {
+                    node.querySelectorAll('iframe').forEach(iframe => {
+                        if (!isPlayerIframe(iframe)) {
+                            console.log('[AdBlock] Blocked nested iframe:', iframe.src || '(no src)');
+                            iframe.remove();
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+    observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true
+    });
+
+    // Run cleanup periodically as a fallback
+    setInterval(() => {
+        cleanupIframes();
+        cleanupOverlays();
+    }, 2000);
+
+    // Initial cleanup
+    cleanupIframes();
+})();
 
         /**
          * Toggles the visibility of the side menu and its overlay.
