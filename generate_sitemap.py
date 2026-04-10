@@ -21,7 +21,7 @@ def generate_sitemap():
     url_date_map = {} # URL
 
     try:
-        # 1.
+        # 1. Read existing sitemap but skip old-format URLs (without title)
         if os.path.exists(SITEMAP_FILE):
             try:
                 tree = ET.parse(SITEMAP_FILE)
@@ -32,6 +32,10 @@ def generate_sitemap():
                     lastmod = url_tag.find('ns:lastmod', ns)
                     
                     clean_url = html.unescape(loc)
+                    # Skip old-format URLs that don't have 'title=' parameter
+                    if 'movie?id=' in clean_url and 'title=' not in clean_url:
+                        print(f"Skipping old-format URL: {clean_url}")
+                        continue
                     # 
                     if lastmod is not None:
                         url_date_map[clean_url] = lastmod.text
