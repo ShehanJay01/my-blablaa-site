@@ -1072,10 +1072,10 @@
          */
        // Available streaming servers
         const servers = [
-            { name: 'Videasy', movieUrl: (id) => `https://player.videasy.net/movie/${id}`, tvUrl: (id, s, e) => `https://player.videasy.net/tv/${id}/${s}/${e}` },
-            { name: 'VidSrc', movieUrl: (id) => `https://vidsrc.icu/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.icu/embed/tv/${id}/${s}/${e}` },
-            { name: 'MultiEmbed', movieUrl: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`, tvUrl: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` },
-            { name: 'VidLink', movieUrl: (id) => `https://vidlink.pro/movie/${id}`, tvUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}` },
+            { name: 'Server 1', movieUrl: (id) => `https://player.videasy.net/movie/${id}`, tvUrl: (id, s, e) => `https://player.videasy.net/tv/${id}/${s}/${e}` },
+            { name: 'Server 2', movieUrl: (id) => `https://vidsrc.icu/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.icu/embed/tv/${id}/${s}/${e}` },
+            { name: 'Server 3', movieUrl: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`, tvUrl: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` },
+            { name: 'Server 4', movieUrl: (id) => `https://vidlink.pro/movie/${id}`, tvUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}` },
         ];
         let currentServer = 0;
         let lastMediaId = null, lastSeason = null, lastEpisode = null;
