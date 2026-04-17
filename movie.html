@@ -745,6 +745,72 @@
             
             
         }
+        /* Download section styling */
+        .download-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 255, 255, 0.1);
+        }
+
+        .download-section h2 {
+            font-size: 1.2rem;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #00ffff;
+        }
+
+        .download-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .download-btn {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #00ffff 0%, #008b8b 100%);
+            color: black;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 700;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .download-btn i {
+            font-size: 1.2rem;
+        }
+
+        .download-btn span {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            font-weight: 400;
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .download-btn {
+                min-width: 100%;
+                padding: 10px;
+            }
+        }
     </style>
 
 </head>
@@ -820,6 +886,13 @@
         <div id="episodes" style="display:none;"></div>
 
         <div id="player"></div>
+        <div id="download-links" style="display:none;" class="download-section">
+            <h2><i class="fas fa-download"></i> Download Options</h2>
+            <div class="download-grid" id="download-buttons"></div>
+            <p style="font-size: 0.8rem; color: #888; margin-top: 15px; text-align: center;">
+                <i class="fas fa-info-circle"></i> Note: These links will open external sites where you can choose your preferred quality.
+            </p>
+        </div>
     </div>
 
     </main>
@@ -1086,6 +1159,7 @@
 
             if (!mediaId && !season && !episode) {
                 playerContainer.innerHTML = "<p style='text-align: center; margin-top: 3rem;'>No player available for this selection.</p>";
+                document.getElementById("download-links").style.display = "none";
                 return;
             }
 
@@ -1105,6 +1179,7 @@
                 src = srv.tvUrl(mediaId, season, episode);
             } else {
                 playerContainer.innerHTML = "<p style='text-align: center; margin-top: 3rem;'>No player available for this selection.</p>";
+                document.getElementById("download-links").style.display = "none";
                 return;
             }
 
@@ -1119,11 +1194,60 @@
                     style="width:100%; height:500px; border:none; border-radius:12px;"
                 ></iframe>
             `;
+
+            // Render download links
+            renderDownloadLinks(mediaId, season, episode);
         }
 
         function switchServer(index) {
             currentServer = index;
             renderPlayer(lastMediaId, lastSeason, lastEpisode);
+        }
+
+        function renderDownloadLinks(mediaId, season, episode) {
+            const downloadSection = document.getElementById("download-links");
+            const downloadButtons = document.getElementById("download-buttons");
+            
+            if (!mediaId) {
+                downloadSection.style.display = "none";
+                return;
+            }
+
+            downloadSection.style.display = "block";
+            
+            const dlServers = [
+                {
+                    name: "Download Server 1",
+                    quality: "Multi-Quality (Fast)",
+                    url: type === "movie" 
+                        ? `https://vidlink.pro/download/movie/${mediaId}` 
+                        : `https://vidlink.pro/download/tv/${mediaId}/${season}/${episode}`
+                },
+                {
+                    name: "Download Server 2",
+                    quality: "High Definition (1080p)",
+                    url: type === "movie"
+                        ? `https://vidsrc.me/download/movie/${mediaId}`
+                        : `https://vidsrc.me/download/tv/${mediaId}/${season}/${episode}`
+                },
+                {
+                    name: "Download Server 3",
+                    quality: "Standard Mirror",
+                    url: type === "movie"
+                        ? `https://vidsrc.xyz/embed/movie/${mediaId}`
+                        : `https://vidsrc.xyz/embed/tv/${mediaId}/${season}/${episode}`
+                }
+            ];
+
+            downloadButtons.innerHTML = dlServers.map(srv => `
+                <a href="${srv.url}" target="_blank" class="download-btn">
+                    <div>
+                        <i class="fas fa-cloud-download-alt"></i>
+                        ${srv.name}
+                        <span>${srv.quality}</span>
+                    </div>
+                </a>
+            `).join('');
         }
 
 // --- Ad Blocker: Remove rogue iframes & popups injected by the player ---
