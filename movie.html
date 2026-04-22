@@ -910,6 +910,61 @@
             return txt.value;
         }
 
+        /**
+         * Updates SEO Meta Tags Dynamically.
+         * @param {string} title - The base title of the media.
+         * @param {string} overview - The description/overview.
+         * @param {string} poster - The poster image URL.
+         * @param {string} id - The media ID.
+         * @param {string} type - The media type ("movie" or "tv").
+         * @param {number|null} season - The season number.
+         * @param {number|null} episode - The episode number.
+         */
+        function updateSEO(title, overview, poster, id, type, season = null, episode = null) {
+            const siteName = "Mooov";
+            let displayTitle = title;
+            if (type === 'tv' && season && episode) {
+                displayTitle = `${title} - Season ${season} Episode ${episode}`;
+            }
+            
+            const fullPageTitle = `${displayTitle} - ${siteName}`;
+            document.title = fullPageTitle;
+            
+            // Limit description to ~160 characters for SEO
+            const metaDescription = overview.length > 160 ? overview.substring(0, 157) + "..." : overview;
+            
+            const updateMeta = (selector, attr, value) => {
+                const el = document.querySelector(selector);
+                if (el) el.setAttribute(attr, value);
+            };
+
+            updateMeta('meta[name="description"]', 'content', metaDescription);
+            updateMeta('meta[property="og:title"]', 'content', fullPageTitle);
+            updateMeta('meta[property="og:description"]', 'content', metaDescription);
+            updateMeta('meta[property="twitter:title"]', 'content', fullPageTitle);
+            updateMeta('meta[property="twitter:description"]', 'content', metaDescription);
+            
+            if (poster) {
+                updateMeta('meta[property="og:image"]', 'content', poster);
+                updateMeta('meta[property="twitter:image"]', 'content', poster);
+            }
+
+            const seoSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            let canonicalUrl = `https://mooov.online/movie?title=${seoSlug}&id=${id}&type=${type}`;
+            if (type === 'tv' && season && episode) {
+                canonicalUrl += `&s=${season}&e=${episode}`;
+            }
+            
+            updateMeta('link[rel="canonical"]', 'href', canonicalUrl);
+            updateMeta('meta[property="og:url"]', 'content', canonicalUrl);
+            
+            // Update URL in browser bar without reloading for sharing and SEO
+            if (window.history.replaceState) {
+                const newUrl = `?title=${seoSlug}&id=${id}&type=${type}${season ? `&s=${season}` : ''}${episode ? `&e=${episode}` : ''}`;
+                window.history.replaceState({id, type, season, episode}, fullPageTitle, newUrl);
+            }
+        }
+
         // Get ID and type from URL parameters
         const params = new URLSearchParams(window.location.search);
         const id = params.get("id");
@@ -939,20 +994,8 @@
                 
                 // Update SEO Meta Tags Dynamically
                 const overviewText = decodeHTML(data.overview || "Watch this amazing title online.");
-                document.title = `${fullTitle} - Mooov`;
-                document.querySelector('meta[name="description"]')?.setAttribute('content', overviewText);
-                document.querySelector('meta[property="og:title"]')?.setAttribute('content', `${fullTitle} - Mooov`);
-                document.querySelector('meta[property="og:description"]')?.setAttribute('content', overviewText);
-                document.querySelector('meta[property="twitter:title"]')?.setAttribute('content', `${fullTitle} - Mooov`);
-                document.querySelector('meta[property="twitter:description"]')?.setAttribute('content', overviewText);
-                if (data.poster) {
-                    document.querySelector('meta[property="og:image"]')?.setAttribute('content', data.poster);
-                    document.querySelector('meta[property="twitter:image"]')?.setAttribute('content', data.poster);
-                }
-                // Update canonical URL
-                const seoSlug = (data.title || data.name || 'watch').toLowerCase().replace(/[^a-z0-9]+/g, '-');
-                document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://mooov.online/movie?title=${seoSlug}&id=${id}&type=${type}`);
-                document.querySelector('meta[property="og:url"]')?.setAttribute('content', `https://mooov.online/movie?title=${seoSlug}&id=${id}&type=${type}`);
+                const baseTitle = decodeHTML(data.title || data.name || "Untitled");
+                updateSEO(baseTitle, overviewText, data.poster, id, type);
 
                 // Update JSON-LD Structured Data for rich results
                 const jsonLd = {
@@ -1028,8 +1071,10 @@
                         document.getElementById("episodes").style.display = "none";
                     } else {
                         renderSeasons(seasonsData);
-                        // Automatically select the first season and its first episode
-                        selectSeason(seasonsData[0].sn_num);
+                        // Support for specific season/episode from URL
+                        const initialS = parseInt(params.get("s")) || seasonsData[0].sn_num;
+                        const initialE = parseInt(params.get("e"));
+                        selectSeason(initialS, initialE);
                     }
                 } else if (type === "movie") {
                     // For movies, hide season/episode selectors and directly embed the player
@@ -1080,10 +1125,14 @@
         /**
          * Selects a season and renders its episodes.
          * @param {number} seasonNumber - The number of the season to select.
+         * @param {number|null} episodeNumber - Optional episode number to select.
          */
-        function selectSeason(seasonNumber) {
+        function selectSeason(seasonNumber, episodeNumber = null) {
             currentSeason = seasonsData.find(s => s.sn_num === seasonNumber);
-            if (!currentSeason) return;
+            if (!currentSeason) {
+                currentSeason = seasonsData[0];
+                seasonNumber = currentSeason.sn_num;
+            }
 
             // Remove 'active' class from all season buttons
             document.querySelectorAll(".season-button").forEach(btn => btn.classList.remove("active"));
@@ -1094,7 +1143,8 @@
             renderEpisodes(currentSeason.episodes || []);
             // Auto select the first episode in the season if available
             if (currentSeason.episodes && currentSeason.episodes.length > 0) {
-                selectEpisode(currentSeason.episodes[0].ep_number);
+                const epToSelect = episodeNumber || currentSeason.episodes[0].ep_number;
+                selectEpisode(epToSelect);
             } else {
                 // If no episodes in the selected season, clear the player
                 renderPlayer(null, null, null);
@@ -1126,13 +1176,22 @@
         function selectEpisode(episodeNumber) {
             if (!currentSeason) return; // Ensure a season is selected
             currentEpisode = currentSeason.episodes.find(ep => ep.ep_number === episodeNumber);
-            if (!currentEpisode) return;
+            if (!currentEpisode) {
+                currentEpisode = currentSeason.episodes[0];
+                episodeNumber = currentEpisode.ep_number;
+            }
 
             // Remove 'active' class from all episode buttons
             document.querySelectorAll(".episode-button").forEach(btn => btn.classList.remove("active"));
             // Add 'active' class to the selected episode button
             const activeBtn = document.getElementById(`episode-btn-${episodeNumber}`);
             if (activeBtn) activeBtn.classList.add("active");
+
+            // Update SEO and URL for this specific episode
+            const baseTitle = decodeHTML(document.getElementById("title").textContent.split(' (')[0]);
+            const overview = document.getElementById("overview").textContent;
+            const poster = document.getElementById("poster").src;
+            updateSEO(baseTitle, overview, poster, id, type, currentSeason.sn_num, episodeNumber);
 
             renderPlayer(id, currentSeason.sn_num, episodeNumber);
         }
