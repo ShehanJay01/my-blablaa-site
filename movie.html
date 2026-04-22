@@ -995,6 +995,7 @@
                 // Update SEO Meta Tags Dynamically
                 const overviewText = decodeHTML(data.overview || "Watch this amazing title online.");
                 const baseTitle = decodeHTML(data.title || data.name || "Untitled");
+                const seoSlug = baseTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-');
                 updateSEO(baseTitle, overviewText, data.poster, id, type);
 
                 // Update JSON-LD Structured Data for rich results
