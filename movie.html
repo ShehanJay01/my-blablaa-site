@@ -560,6 +560,56 @@
             border-radius: 12px;
         }
 
+        /* Server selector buttons CSS */
+        .server-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 2rem;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .server-selector .label {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-right: 5px;
+            font-weight: 600;
+        }
+
+        .server-btn {
+            padding: 8px 18px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ccc;
+            font-size: 0.85rem;
+            font-family: Nunito, sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .server-btn:hover {
+            border-color: #00ffff;
+            color: white;
+            background: rgba(0, 255, 255, 0.08);
+        }
+
+        .server-btn.active {
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff;
+            box-shadow: 0 0 12px rgba(0, 255, 255, 0.2);
+        }
+
+        @media (max-width: 600px) {
+            .server-btn {
+                padding: 6px 14px;
+                font-size: 0.78rem;
+            }
+        }
+
         /* Seasons horizontal scroll container */
         #seasons {
             margin-top: 2rem;
@@ -939,36 +989,67 @@
             renderPlayer(id, currentSeason.sn_num, episodeNumber);
         }
 
+        // Available streaming servers
+        const servers = [
+            { name: 'Server 1', movieUrl: (id) => `https://player.videasy.net/movie/${id}`, tvUrl: (id, s, e) => `https://player.videasy.net/tv/${id}/${s}/${e}` },
+            { name: 'Server 2', movieUrl: (id) => `https://vidsrc.icu/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.icu/embed/tv/${id}/${s}/${e}` },
+            { name: 'Server 3', movieUrl: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`, tvUrl: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` },
+            { name: 'Server 4', movieUrl: (id) => `https://vidlink.pro/movie/${id}`, tvUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}` },
+        ];
+        let currentServer = 0;
+        let lastMediaId = null, lastSeason = null, lastEpisode = null;
+
         /**
          * Renders the video player iframe.
          * @param {string} mediaId - The ID of the movie/TV show.
          * @param {number|null} season - The season number (null for movies).
          * @param {number|null} episode - The episode number (null for movies).
          */
-       function renderPlayer(mediaId, season, episode) {
-    const playerContainer = document.getElementById("player");
-    let src;
-    if (type === "movie") {
-        src = `https://player.videasy.net/movie/${mediaId}`;
-    } else if (type === "tv" && season && episode) {
-        src = `https://player.videasy.net/tv/${mediaId}/${season}/${episode}`;
-    } else {
-        playerContainer.innerHTML = "<p style='text-align: center; margin-top: 3rem;'>No player available for this selection.</p>";
-        return;
-    }
+        function renderPlayer(mediaId, season, episode) {
+            lastMediaId = mediaId; lastSeason = season; lastEpisode = episode;
+            const playerContainer = document.getElementById("player");
 
-    // Sandbox attribute 
-    playerContainer.innerHTML = `
-        <iframe
-            src="${src}"
-            allowfullscreen
-            allow="autoplay; encrypted-media; picture-in-picture"
-            loading="lazy"
-            referrerpolicy="no-referrer"
-            style="width:100%; height:500px; border:none; border-radius:12px;"
-        ></iframe>
-    `;
-}
+            if (!mediaId && !season && !episode) {
+                playerContainer.innerHTML = "<p style='text-align: center; margin-top: 3rem;'>No player available for this selection.</p>";
+                return;
+            }
+
+            // Build server selector buttons
+            let serverBtns = '<div class="server-selector"><span class="label"><i class="fas fa-server"></i> Server:</span>';
+            servers.forEach((srv, i) => {
+                serverBtns += `<button class="server-btn ${i === currentServer ? 'active' : ''}" onclick="switchServer(${i})">${srv.name}</button>`;
+            });
+            serverBtns += '</div>';
+
+            // Get the URL from current server
+            const srv = servers[currentServer];
+            let src;
+            if (type === "movie") {
+                src = srv.movieUrl(mediaId);
+            } else if (type === "tv" && season && episode) {
+                src = srv.tvUrl(mediaId, season, episode);
+            } else {
+                playerContainer.innerHTML = "<p style='text-align: center; margin-top: 3rem;'>No player available for this selection.</p>";
+                return;
+            }
+
+            playerContainer.innerHTML = `
+                ${serverBtns}
+                <iframe
+                    src="${src}"
+                    allowfullscreen
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                    loading="lazy"
+                    referrerpolicy="no-referrer"
+                    style="width:100%; height:500px; border:none; border-radius:12px;"
+                ></iframe>
+            `;
+        }
+
+        function switchServer(index) {
+            currentServer = index;
+            renderPlayer(lastMediaId, lastSeason, lastEpisode);
+        }
 
         /**
          * Toggles the visibility of the side menu and its overlay.
