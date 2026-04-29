@@ -9,395 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="icon" type="image/png" href="https://i.postimg.cc/nLdZJ80H/mooov.png">
     <style>
-        /* Base body styles for dark theme and Nunito font */
-        body {
-            font-family: 'Nunito', sans-serif;
-            background-color: #000000; /* Dark background */
-            color: #e2e8f0; /* Light text */
-            overflow-x: hidden; /* Prevent horizontal scroll for the whole page */
-        }
-
-        /* Custom styles for the hero slideshow background */
-        .hero-slideshow-bg {
-            background-size: cover;
-            background-position: center;
-            transition: background-image 1s ease-in-out; /* Smooth transition for background image */
-        }
-
-        /* Overlay for text readability (left to right) on the hero section */
-        .hero-overlay {
-            background: linear-gradient(to left, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,3) 100%);
-        }
-        
-        /* --- Grid Layout Styles for Horizontal Scroll Sections --- */
-        h2 {
-            margin: 30px 0 15px;
-            color: #e2e8f0; /* Ensure headings are visible */
-        }
-        .grid-container {
-            display: flex; /* Use flexbox for horizontal layout */
-            overflow-x: auto; /* Enable horizontal scrolling */
-            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-            gap: 15px; /* Spacing between cards */
-            padding-bottom: 15px; /* Space for scrollbar */
-            flex-wrap: nowrap; /* Ensure items stay in one row */
-            scroll-snap-type: x mandatory; /* For smooth, snapped scrolling */
-        }
-        .card {
-            background: #222;
-            border-radius: 8px;
-            overflow: hidden;
-            transition: transform 0.3s ease;
-            flex-shrink: 0; /* Prevent cards from shrinking */
-            width: 160px; /* Fixed width for each card in horizontal scroll */
-            aspect-ratio: 2/3; /* Common poster aspect ratio */
-            display: flex;
-            flex-direction: column;
-        }
-        .card:hover {
-            transform: scale(1.05);
-        }
-        .card img {
-            width: 100%;
-            height: auto; /* Allow image to fill card width while maintaining aspect ratio */
-            display: block;
-            object-fit: cover; /* Ensure image covers the area */
-            flex-grow: 1; /* Allow image to take available space */
-        }
-        .card-title {
-            padding: 8px 10px;
-            font-size: 14px;
-            font-weight: 600;
-            text-align: center;
-            height: 40px; /* Fixed height for title to prevent layout shifts */
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 2; /* Limit to 2 lines */
-            -webkit-box-orient: vertical;
-            color: #e2e8f0; /* Ensure title is visible */
-        }
-        /* Ensure sections have some top padding when not directly below hero */
-        .content-section {
-            padding-top: 40px; /* Add some space above new sections */
-        }
-
-        /* --- Gradient Overlay Styles for Slideshow (bottom fade) --- */
-        .gradient-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 150px; /* Adjust the height of the gradient as needed */
-            background: linear-gradient(to top, rgba(0, 0, 0, 1) 0%, transparent 100%); /* Adjust transparency and colors */
-            z-index: 5; /* Ensure it's above the background but below text content */
-        }
-
-        /* Custom scrollbar for horizontal sections */
-        .grid-container::-webkit-scrollbar {
-            height: 8px;
-        }
-        .grid-container::-webkit-scrollbar-track {
-            background: #2d3748;
-            border-radius: 10px;
-        }
-        .grid-container::-webkit-scrollbar-thumb {
-            background: #4a5568;
-            border-radius: 10px;
-        }
-        .grid-container::-webkit-scrollbar-thumb:hover {
-            background: #6b7280;
-        }
-
-        /* Spinner CSS for loading indicators */
-        .spinner {
-            border: 8px solid #333;
-            border-top: 8px solid #00ffff; /* Cyan color for the spinning part */
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-            margin: 50px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* --- Combined Search Bar and Category Changer Styles (refined) --- */
-        .search-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-            width: 380px; /* Adjusted width for the search bar */
-            background-color: rgba(45,55,72,0.4); /* Darker gray background for the whole bar */
-            border-radius: 9999px; /* Fully rounded corners */
-            padding: 4px; /* Internal padding around all elements */
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Subtle shadow */
-        }
-
-        .browse-buttons {
-            display: flex;
-            background-color: rgba(74,85,104,0.8); /* Slightly lighter gray for the button background */
-            border-radius: 9999px; /* Fully rounded buttons container */
-            padding: 2px; /* Padding inside the button container */
-            margin-right: 8px; /* Space between buttons and input field */
-            flex-shrink: 0; /* Prevent buttons from shrinking */
-        }
-
-        .browse-button {
-            flex: 1;
-            padding: 6px 12px; /* Adjusted padding for button size */
-            border: none;
-            background-color: transparent;
-            color: #e2e8f0; /* Light text color */
-            font-size: 14px;
-            cursor: pointer;
-            border-radius: 9999px; /* Fully rounded individual buttons */
-            transition: background-color 0.2s ease, color 0.2s ease;
-            white-space: nowrap;
-        }
-
-        .browse-button.active {
-            background-color: #00ffff; /* Your accent color */
-            color: #1a202c; /* Dark text on active button */
-            font-weight: bold;
-        }
-
-        #search-input {
-            flex-grow: 1; /* Allows the input to take up all available horizontal space */
-            background-color: transparent; /* Makes input background transparent to see parent */
-            border: none; /* Remove default input border */
-            outline: none; /* Remove outline on focus */
-            color: #e2e8f0; /* Text color */
-            padding: 6px 0; /* Vertical padding, horizontal handled by flex-grow */
-            font-size: 16px;
-            min-width: 80px; /* Ensure a minimum width for the input part */
-        }
-
-        #search-input::placeholder {
-            color: #a0aec0; /* Lighter gray placeholder text */
-        }
-
-        /* Style for the search button at the end of the combined component */
-        #search-button {
-            background-color: transparent; /* Transparent background for the icon button */
-            border: none;
-            color: #00ffff; /* Accent color for the search icon */
-            padding: 6px 10px; /* Adjusted padding around the icon */
-            cursor: pointer;
-            transition: color 0.2s ease;
-            flex-shrink: 0; /* Prevent icon from shrinking */
-        }
-
-        #search-button:hover {
-            color: #38b2ac; /* Slightly darker accent on hover */
-        }
-
-        /* --- Mobile Navigation Styles --- */
-        /* Hide/show elements based on device (desktop vs. mobile) */
-        .desktop-only {
-            display: block;
-        }
-        .mobile-only {
-            display: none;
-        }
-
-        /* Responsive visibility for desktop/mobile elements */
-        @media (max-width: 768px) {
-            .desktop-only {
-                display: none !important; /* Force hide on small screens */
-            }
-            .mobile-only {
-                display: block !important; /* Force show on small screens */
-            }
-        }
-
-        /* Menu toggle button for mobile */
-        .menu-toggle {
-            position: fixed;
-            top: 20px;
-            right: 10px;
-            z-index: 11000; /* Ensure it's above everything */
-            font-size: 1.8rem;
-            color: white;
-            background: none;
-            border: none;
-            cursor: pointer;
-            display: none; /* Hidden by default, shown via media query */
-        }
-
-        /* Show menu toggle only on mobile */
-        @media (max-width: 768px) {
-            .menu-toggle {
-                display: block;
-            }
-        }
-
-        /* Side menu styling */
-        .side-menu {
-            position: fixed;
-            top: 0;
-            right: -260px; /* Initially off-screen to the right */
-            width: 250px;
-            height: 100%;
-            background-color: #111;
-            color: white;
-            padding: 2rem 1rem;
-            transition: right 0.3s ease; /* Smooth transition for opening/closing */
-            z-index: 10000;
-            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5); /* Shadow for depth */
-            overflow-y: auto; /* Enable scrolling for long menus */
-        }
-
-        /* State when menu is open */
-        .side-menu.open {
-            right: 0;
-        }
-
-        /* Overlay when menu is open to dim background */
-        .menu-overlay {
-            display: none;
-            position: fixed;
-            inset: 0; /* Top, right, bottom, left to 0 */
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 9999;
-        }
-        .menu-overlay.show {
-            display: block;
-        }
-
-        /* New menu specific styles */
-        .menu-header {
-            font-size: 18px;
-            font-weight: bold;
-            margin-top: 20px;
-            margin-bottom: 15px;
-            color: #aaa;
-            padding-left: 10px; /* Align with list items */
-        }
-
-        .menu-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 10px; /* Increased padding slightly for better touch target */
-            color: white;
-            text-decoration: none;
-            font-size: 16px;
-            transition: background-color 0.2s ease;
-            cursor: pointer;
-            border-radius: 4px; /* Slight rounded corners */
-        }
-
-        .menu-item:hover {
-            background-color: #2a2a2a;
-        }
-
-        /* Styling for Font Awesome icons within menu items */
-        .menu-item i {
-            margin-right: 15px;
-            width: 20px; /* To maintain consistent spacing */
-            text-align: center;
-            font-size: 1.1rem; /* Adjust icon size */
-            color: white; /* Make the icon white */
-        }
-
-        /* Browse buttons container for mobile menu */
-        .side-menu .browse-buttons { /* Specificity for mobile menu browse buttons */
-            display: flex;
-            margin-bottom: 20px;
-            background-color: #2a2a2a;
-            border-radius: 8px;
-            padding: 5px;
-            margin-left: 10px; /* Adjusting margin for alignment */
-            margin-right: 10px; /* Adjusting margin for alignment */
-        }
-
-        /* Individual browse button styling for mobile menu */
-        .side-menu .browse-button { /* Specificity for mobile menu browse buttons */
-            flex: 1;
-            padding: 10px 15px;
-            border: none;
-            background-color: transparent;
-            color: #bbb;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: background-color 0.2s ease, color 0.2s ease;
-        }
-
-        /* Active state for browse buttons in mobile menu */
-        .side-menu .browse-button.active { /* Specificity for mobile menu browse buttons */
-            background-color: #00ffff; /* Your accent color */
-            color: black; /* Text color on active button */
-            font-weight: bold;
-        }
-
-        /* Search section within the menu */
-        .search-section-menu {
-            display: flex;
-            background-color: #2a2a2a;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-top: 15px; /* Added margin-top to separate from browse buttons */
-            margin-left: 10px; /* Adjusting margin for alignment */
-            margin-right: 10px; /* Adjusting margin for alignment */
-        }
-
-        /* Menu search input field */
-        #menu-search-input {
-            flex: 1;
-            padding: 10px 15px;
-            border: none;
-            background-color: transparent;
-            color: white;
-            font-size: 16px;
-            outline: none;
-        }
-
-        /* Menu search button */
-        #menu-search-button {
-            background-color: transparent;
-            border: none;
-            padding: 10px 15px;
-            cursor: pointer;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Styling for Font Awesome icon within menu search button */
-        #menu-search-button i {
-            color: white; /* Make the icon white */
-            font-size: 1.2rem;
-        }
-
-        /* Smaller font size for movie title on mobile devices */
-        @media (max-width: 600px) {
-            .movie-info h1 {
-                font-size: 1.8rem;
-                margin: 0 0 0.5rem 0;
-            }
-        }
-.menu-watermark {
-  position: absolute; /* Changed to absolute to position relative to its parent */
-  bottom: 20px; /* Adjust as needed from the bottom of the menu */
-  left: 50%;
-  transform: translateX(-50%);
-  color: #292929;
-  font-size: 1.0em;
-  font-weight: 200; /* Thin font weight */
-  opacity: 0.5;
-  z-index: 1; /* A lower z-index as it's inside the menu */
-  pointer-events: none;
-  /* Ensure the parent (.side-menu) has position: relative; */
-}
-
+     .browse-button,.card-title{font-size:14px;color:#e2e8f0}#search-input,.card-title,body,h2{color:#e2e8f0}.footer,body{font-family:Nunito,sans-serif}body{background-color:#000;overflow-x:hidden}.hero-slideshow-bg{background-size:cover;background-position:center;transition:background-image 1s ease-in-out}.hero-overlay{background:linear-gradient(to left,rgba(0,0,0,.7) 0,rgba(0,0,0,.5) 50%,#000 100%)}h2{margin:30px 0 15px}.grid-container{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:15px;padding-bottom:15px;flex-wrap:nowrap;scroll-snap-type:x mandatory}.card{background:#222;border-radius:8px;overflow:hidden;transition:transform .3s;flex-shrink:0;width:160px;aspect-ratio:2/3;display:flex;flex-direction:column}.card:hover{transform:scale(1.05)}.card img{width:100%;height:auto;display:block;object-fit:cover;flex-grow:1}.card-title{padding:8px 10px;font-weight:600;text-align:center;height:40px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.content-section{padding-top:40px}.gradient-overlay{position:absolute;bottom:0;left:0;width:100%;height:150px;background:linear-gradient(to top,#000 0,transparent 100%);z-index:5}.grid-container::-webkit-scrollbar{height:8px}.grid-container::-webkit-scrollbar-track{background:#2d3748;border-radius:10px}.grid-container::-webkit-scrollbar-thumb{background:#4a5568;border-radius:10px}.grid-container::-webkit-scrollbar-thumb:hover{background:#6b7280}.spinner{border:8px solid #333;border-top:8px solid #0ff;border-radius:50%;width:60px;height:60px;animation:1s linear infinite spin;margin:50px auto}.browse-buttons,.search-container{display:flex;border-radius:9999px}@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}.search-container{position:relative;align-items:center;width:380px;background-color:rgba(45,55,72,.4);padding:4px;box-shadow:0 4px 10px rgba(0,0,0,.3)}.browse-buttons{background-color:rgba(74,85,104,.8);padding:2px;margin-right:8px;flex-shrink:0}#search-button,#search-input,.browse-button{background-color:transparent}.browse-button,.side-menu .browse-button{flex:1;transition:background-color .2s,color .2s;cursor:pointer}.browse-button{padding:6px 12px;border:none;border-radius:9999px;white-space:nowrap}.menu-toggle,.side-menu{color:#fff;position:fixed}.browse-button.active{background-color:#0ff;color:#1a202c;font-weight:700}#search-input{flex-grow:1;border:none;outline:0;padding:6px 0;font-size:16px;min-width:80px}#search-input::placeholder{color:#a0aec0}#search-button{border:none;color:#0ff;padding:6px 10px;cursor:pointer;transition:color .2s;flex-shrink:0}#search-button:hover{color:#38b2ac}.desktop-only,.menu-overlay.show{display:block}.mobile-only{display:none}.menu-toggle{top:20px;right:10px;z-index:11000;font-size:1.8rem;background:0 0;border:none;cursor:pointer;display:none}.side-menu{top:0;right:-260px;width:250px;height:100%;background-color:#111;padding:2rem 1rem;transition:right .3s;z-index:10000;box-shadow:-5px 0 15px rgba(0,0,0,.5);overflow-y:auto}.side-menu.open{right:0}.menu-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999}.menu-header{font-size:18px;font-weight:700;margin-top:20px;margin-bottom:15px;color:#aaa;padding-left:10px}.footer-section ul,.menu-list{list-style:none;padding:0;margin:0}.search-section-menu,.side-menu .browse-buttons{background-color:#2a2a2a;margin-left:10px;margin-right:10px;display:flex}.menu-item{display:flex;align-items:center;padding:10px;color:#fff;text-decoration:none;font-size:16px;transition:background-color .2s;cursor:pointer;border-radius:4px}.menu-item:hover{background-color:#2a2a2a}.menu-item i{margin-right:15px;width:20px;text-align:center;font-size:1.1rem;color:#fff}.side-menu .browse-buttons{margin-bottom:20px;border-radius:8px;padding:5px}.side-menu .browse-button{padding:10px 15px;border:none;background-color:transparent;color:#bbb;font-size:16px;border-radius:6px}.side-menu .browse-button.active{background-color:#0ff;color:#000;font-weight:700}.search-section-menu{border-radius:8px;overflow:hidden;margin-top:15px}#menu-search-button,#menu-search-input{background-color:transparent;border:none;padding:10px 15px}#menu-search-input{flex:1;color:#fff;font-size:16px;outline:0}#menu-search-button{cursor:pointer;position:relative;z-index:1}#menu-search-button i{color:#fff;font-size:1.2rem}@media (max-width:600px){.movie-info h1{font-size:1.8rem;margin:0 0 .5rem}}.menu-watermark{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#292929;font-size:1em;font-weight:200;opacity:.5;z-index:1;pointer-events:none}.footer{background-color:#000;color:#e2e8f0;padding:40px 0}.footer-container{max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;gap:30px;padding:0 20px}.footer-section{flex:1;min-width:200px;margin-bottom:20px;text-align:center}.footer-section h3{font-size:1.5rem;font-weight:700;margin-bottom:15px;color:#0ff}.footer-section ul li{margin-bottom:10px}.footer-section ul li a{color:#a0aec0;text-decoration:none;transition:color .3s}.footer-section ul li a:hover{color:#e2e8f0}.social-icons{display:flex;gap:15px;margin-top:15px;justify-content:center}.social-icons a{color:#e2e8f0;font-size:1.8rem;transition:color .3s,transform .3s}.social-icons a:hover{color:#0ff;transform:translateY(-3px)}.footer-bottom{text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid #2d3748;color:#a0aec0;font-size:.9rem}@media (max-width:768px){.desktop-only{display:none!important}.mobile-only{display:block!important}.menu-toggle{display:block}.footer-container{flex-direction:column;align-items:center;text-align:center}.footer-section{min-width:unset;width:100%}.social-icons{justify-content:center}}
     </style>
 </head>
 <body class="antialiased">
@@ -406,7 +18,7 @@
 
     <nav class="fixed top-0 left-0 w-full bg-gradient-to-b from-black to-transparent z-50 p-4">
         <div class="container mx-auto flex justify-between items-center">
-           <div class="text-2xl font-bold text-white mt-[5px] sm:mt-0">Mooov</div>
+            <div class="text-2xl font-bold text-white mt-[5px] sm:mt-0">Mooov</div>
             <ul class="flex items-center space-x-6 desktop-only">
                 <li><a href="#" class="text-white hover:text-gray-300 transition duration-300">Home</a></li>
                 <li><a href="movies" class="text-white hover:text-gray-300 transition duration-300">Movies</a></li>
@@ -467,20 +79,20 @@
         </div>
     </section>
 
-   
+    
     
 
     <section class="container mx-auto px-4 py-8 -mt-24 relative z-20">
-        <h2 class="text-3xl font-bold mb-6 text-white">Trending Movies</h2>
+        <h2 class="text-2xl sm:text-3xl font-bold mb-6 text-white">Trending Movies</h2>
         <div class="relative">
             <div id="trending-movies-grid" class="grid-container">
                 <div class="spinner"></div> </div>
         </div>
     </section>
     
-     <section class="container mx-auto px-4 py-8 content-section">
+      <section class="container mx-auto px-4 py-8 content-section">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-3xl font-bold mb-6 text-white">New Releases</h2>
+           <h2 class="text-2xl sm:text-3xl font-bold mb-6 text-white">New Releases</h2>
         </div>
         <div id="new-releases" class="grid-container">
             <div class="spinner"></div>
@@ -491,7 +103,7 @@
 
     <section class="container mx-auto px-4 py-8 content-section">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-3xl font-bold mb-6 text-white">Popular Movies</h2>
+           <h2 class="text-2xl sm:text-3xl font-bold mb-6 text-white">Popular Movies</h2>
         </div>
         <div id="popular-movies" class="grid-container">
             <div class="spinner"></div>
@@ -500,7 +112,7 @@
 
     <section class="container mx-auto px-4 py-8 content-section">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-3xl font-bold mb-6 text-white">Top Rated Movies</h2>
+           <h2 class="text-2xl sm:text-3xl font-bold mb-6 text-white">Top Rated Movies</h2>
         </div>
         <div id="top-rated-movies" class="grid-container">
             <div class="spinner"></div>
@@ -509,7 +121,7 @@
 
     <section class="container mx-auto px-4 py-8 content-section">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-3xl font-bold mb-6 text-white">Popular TV Series</h2>
+           <h2 class="text-2xl sm:text-3xl font-bold mb-6 text-white">Popular TV Series</h2>
         </div>
         <div id="popular-tv" class="grid-container">
             <div class="spinner"></div>
@@ -518,7 +130,7 @@
 
     <section class="container mx-auto px-4 py-8 content-section">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-3xl font-bold mb-6 text-white">Top Rated TV Series</h2>
+            <h2 class="text-2xl sm:text-3xl font-bold mb-6 text-white">Top Rated TV Series</h2>
         </div>
         <div id="top-rated-tv" class="grid-container">
             <div class="spinner"></div>
@@ -526,302 +138,44 @@
     </section>
     
     
-
-
    <script>
-    // --- TMDB API Configuration ---
-    // REMOVED: const TMDB_API_KEY = ''; // Your TMDB API key
-    // Use your Cloudflare Worker as the base URL for API calls
-    const WORKER_BASE_URL = 'https://indx.mooov.online'; // <<<--- YOUR WORKER URL
-    const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
-
-    // API Endpoints for different content categories
-    // These will now be relative paths that your worker will forward
-    const POPULAR_MOVIES_ENDPOINT = `/movie/popular`;
-    const TRENDING_MOVIES_ENDPOINT = `/trending/movie/week`;
-    const POPULAR_TV_ENDPOINT = `/tv/popular`;
-    const NEW_RELEASES_ENDPOINT = `/movie/now_playing`;
-    const TOP_RATED_MOVIES_ENDPOINT = `/movie/top_rated`;
-    const TOP_RATED_TV_ENDPOINT = `/tv/top_rated`;
-    const SEARCH_ENDPOINT = `/search/multi`; // For searching both movies and TV
-
-    // --- DOM Elements ---
-    const heroSlideshow = document.getElementById('hero-slideshow');
-    const slideshowTitle = document.getElementById('slideshow-title');
-    const slideshowDescription = document.getElementById('slideshow-description');
-    const slideshowWatchNowBtn = document.getElementById('slideshow-watch-now-btn');
-    const trendingMoviesGrid = document.getElementById('trending-movies-grid');
-    const popularMoviesContainer = document.getElementById('popular-movies');
-    const popularTvContainer = document.getElementById('popular-tv');
-    const newReleasesContainer = document.getElementById('new-releases');
-    const topRatedMoviesContainer = document.getElementById('top-rated-movies');
-    const topRatedTvContainer = document.getElementById('top-rated-tv');
-
-    // Search Bar Elements (Desktop)
-    const searchInput = document.getElementById('search-input');
-    const searchButton = document.getElementById('search-button');
-    const browseButtons = document.querySelectorAll('.browse-button'); // Select all desktop browse buttons
-
-    // Mobile Menu Elements
-    const menuToggle = document.querySelector('.menu-toggle');
-    const sideMenu = document.getElementById('sideMenu');
-    const menuOverlay = document.getElementById('menuOverlay');
-    const menuSearchInput = document.getElementById('menu-search-input');
-    const menuSearchButton = document.getElementById('menu-search-button');
-    const menuBrowseButtons = document.querySelectorAll('#sideMenu .browse-button'); // Select mobile menu browse buttons
-
-    // --- Slideshow Variables ---
-    let popularMoviesSlides = [];
-    let currentSlideIndex = 0;
-    let slideshowInterval;
-    const SLIDESHOW_DURATION = 8000; // 8 seconds per slide
-
-    // --- Search Category Variable ---
-    let currentSearchType = 'movie'; // Default search type for both desktop and mobile search bars
-
-    // --- Helper Functions ---
-
-    /**
-     * Fetches data from a given URL.
-     * @param {string} url - The URL to fetch from.
-     * @returns {Promise<object>} - The JSON response, or null if an error occurs.
-     */
-    async function fetchData(url) {
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            return null;
-        }
-    }
-
-    /**
-     * Renders a single slide in the hero section.
-     * Updates background image, title, and description.
-     * @param {object} item - The movie or TV show object from TMDB.
-     */
-    function renderSlide(item) {
-        // Construct backdrop image URL, with a fallback if not available
-        const backdropPath = item.backdrop_path ? `${TMDB_IMAGE_BASE_URL}w1280${item.backdrop_path}` : 'https://i.postimg.cc/d15mp6sz/Image-Not-Available.jpg';
-        
-        heroSlideshow.style.backgroundImage = `url('${backdropPath}')`;
-        slideshowTitle.textContent = item.title || item.name || 'Unknown Title'; // Use 'title' for movies, 'name' for TV shows
-        slideshowDescription.textContent = item.overview ?
-            // Truncate long descriptions
-            (item.overview.length > 200 ? item.overview.substring(0, 197) + '...' : item.overview) :
-            'No description available.';
-
-        // Store current slide data for "Watch Now" button to link to details page
-        slideshowWatchNowBtn.dataset.itemId = item.id;
-        slideshowWatchNowBtn.dataset.itemType = item.media_type === 'tv' || item.first_air_date ? 'tv' : 'movie'; // Determine type for navigation
-    }
-
-    /**
-     * Advances the slideshow to the next slide in the `popularMoviesSlides` array.
-     */
-    function nextSlide() {
-        currentSlideIndex = (currentSlideIndex + 1) % popularMoviesSlides.length;
-        renderSlide(popularMoviesSlides[currentSlideIndex]);
-    }
-
-    /**
-     * Starts the automatic slideshow interval. Clears any existing interval first.
-     */
-    function startSlideshow() {
-        if (slideshowInterval) {
-            clearInterval(slideshowInterval);
-        }
-        slideshowInterval = setInterval(nextSlide, SLIDESHOW_DURATION);
-    }
-
-    /**
-     * Creates and appends a movie/TV show card to a given container.
-     * Each card is wrapped in an anchor tag for navigation to a detail page.
-     * @param {object} item - The movie or TV show object from TMDB.
-     * @param {HTMLElement} container - The DOM element to append the card to.
-     * @param {string} imageSize - The size of the poster image (e.g., 'w300', 'w500').
-     */
-    function createCard(item, container, imageSize = 'w300') {
-        // Construct poster image URL, with a fallback if not available
-        const posterPath = item.poster_path ? `${TMDB_IMAGE_BASE_URL}${imageSize}${item.poster_path}` : 'https://placehold.co/300x450/2d3748/e2e8f0?text=No+Poster';
-        // Determine item type for the detail page link (movie or tv)
-        const itemType = item.media_type === 'tv' || item.first_air_date ? 'tv' : 'movie';
-        const itemId = item.id;
-
-        const cardLink = document.createElement('a');
-        cardLink.href = `movie?id=${itemId}&type=${itemType}`; // Link to a generic movie/TV detail page and removed.html
-        cardLink.classList.add('card'); // Apply card styling to the anchor tag
-        cardLink.innerHTML = `
-            <img src="${posterPath}" alt="${item.title || item.name || 'Poster'}" onerror="this.onerror=null;this.src='https://placehold.co/300x450/2d3748/e2e8f0?text=No+Poster';" />
-            <div class="card-title">${item.title || item.name || 'Unknown Title'}</div>
-        `;
-        container.appendChild(cardLink);
-    }
-
-    /**
-     * Generic function to load content for a section (e.g., Trending, Popular),
-     * handling the spinner loading state and rendering cards.
-     * @param {string} endpoint - The TMDB API endpoint URL.
-     * @param {HTMLElement} container - The DOM element to append cards to.
-     * @param {string} type - 'movie' or 'tv' for fallback messages.
-     */
-    async function loadSectionInitial(endpoint, container, type = 'movie') {
-        container.innerHTML = '<div class="spinner"></div>'; // Show spinner while loading
-
-        // Construct the URL to your Cloudflare Worker, passing the TMDB path and query parameters
-        const url = `${WORKER_BASE_URL}${endpoint}?language=en-US&page=1`; // <<<--- KEY CHANGE HERE
-        const data = await fetchData(url);
-
-        if (data && data.results && data.results.length > 0) {
-            container.innerHTML = ''; // Clear spinner
-            data.results.forEach(item => {
-                createCard(item, container, 'w300');
-            });
-        } else {
-            console.warn(`Could not fetch ${type} for ${endpoint} or no results found.`);
-            container.innerHTML = `<p class="col-span-full text-center text-gray-400">Failed to load ${type}s.</p>`;
-        }
-    }
-
-    // --- Event Listeners ---
-
-    // Event listener for the slideshow "Watch Now" button
-    slideshowWatchNowBtn.addEventListener('click', () => {
-        const itemId = slideshowWatchNowBtn.dataset.itemId;
-        const itemType = slideshowWatchNowBtn.dataset.itemType;
-        if (itemId && itemType) {
-            // Redirect to a detail page with the item ID and type
-            window.location.href = `movie?id=${itemId}&type=${itemType}`; //removed .html
-        } else {
-            console.warn("No movie/TV show loaded for 'Watch Now' button.");
-        }
-    });
-
-    // Event listener for the desktop search button click
-    searchButton.addEventListener('click', performSearch);
-    // Event listener for "Enter" key press in the desktop search input
-    searchInput.addEventListener('keypress', (event) => {
-        if (event.key === 'Enter') {
-            performSearch();
-        }
-    });
-
-    /**
-     * Handles the search action for desktop, redirecting to a search results page.
-     */
-    function performSearch() {
-        const query = searchInput.value.trim();
-        if (query) {
-            // Redirect to search.html with the query and selected type
-            // The search.html page will also need to be updated to use the worker
-            window.location.href = `search?query=${encodeURIComponent(query)}&category=${currentSearchType}`; //removed.html
-        } else {
-            // Log a message if the search query is empty
-            console.log('Please enter a search query!');
-        }
-    }
-
-    // Event listeners for desktop category changer buttons (Movies/TV Shows)
-    browseButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            // Remove 'active' class from all desktop buttons
-            browseButtons.forEach(btn => btn.classList.remove('active'));
-            // Add 'active' class to the clicked desktop button
-            button.classList.add('active');
-            // Update the current search type based on the button's data attribute
-            currentSearchType = button.dataset.searchType;
-            // Update the placeholder text of the desktop search input
-            searchInput.placeholder = `Search ${currentSearchType === 'movie' ? 'movies' : 'TV shows'}...`;
-        });
-    });
-
-    // --- Mobile Menu Functions ---
-
-    /**
-     * Toggles the mobile side menu and overlay visibility.
-     */
-    function toggleMenu() {
-        sideMenu.classList.toggle('open');
-        menuOverlay.classList.toggle('show');
-    }
-
-    /**
-     * Handles the search action for the mobile menu, redirecting to a search results page.
-     */
-    function performMenuSearch() {
-        const query = menuSearchInput.value.trim();
-        if (query) {
-            // The search.html page will also need to be updated to use the worker
-            window.location.href = `search?query=${encodeURIComponent(query)}&category=${currentSearchType}`; //removed.html
-            toggleMenu(); // Close menu after search
-        } else {
-            console.log('Please enter a search query in the mobile menu!');
-        }
-    }
-
-    // Event listener for mobile menu search button click
-    menuSearchButton.addEventListener('click', performMenuSearch);
-    // Event listener for "Enter" key press in the mobile menu search input
-    menuSearchInput.addEventListener('keypress', (event) => {
-        if (event.key === 'Enter') {
-            performMenuSearch();
-        }
-    });
-
-    // Event listeners for mobile menu category changer buttons
-    menuBrowseButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            // Remove 'active' class from all mobile menu buttons
-            menuBrowseButtons.forEach(btn => btn.classList.remove('active'));
-            // Add 'active' class to the clicked mobile menu button
-            button.classList.add('active');
-            // Update the current search type based on the button's data attribute
-            currentSearchType = button.dataset.searchType;
-            // Update the placeholder text of the mobile menu search input
-            menuSearchInput.placeholder = `Browse ${currentSearchType === 'movie' ? 'Movies' : 'TV Shows'}`;
-        });
-    });
-
-
-    // --- Initialization Function ---
-    /**
-     * Initializes the homepage by fetching and rendering various content sections.
-     */
-    async function initializeHomepage() {
-        // Fetch popular movies for the hero slideshow
-        // Using WORKER_BASE_URL and relative path
-        const popularMoviesData = await fetchData(`${WORKER_BASE_URL}${POPULAR_MOVIES_ENDPOINT}?language=en-US&page=1`); // <<<--- KEY CHANGE HERE
-        if (popularMoviesData && popularMoviesData.results && popularMoviesData.results.length > 0) {
-            popularMoviesSlides = popularMoviesData.results;
-            renderSlide(popularMoviesSlides[currentSlideIndex]); // Render the first slide
-            startSlideshow(); // Start automatic transitions
-        } else {
-            console.warn('Could not fetch popular movies for slideshow or no results found.');
-            slideshowTitle.textContent = 'Failed to Load Movies';
-            slideshowDescription.textContent = 'Please check your API key or network connection.';
-            heroSlideshow.style.backgroundImage = 'url("https://placehold.co/1920x1080/1a202c/e2e8f0?text=Error")';
-        }
-
-        // Load initial content for all horizontal scroll sections
-        // All calls now use the worker base URL
-        loadSectionInitial(TRENDING_MOVIES_ENDPOINT, trendingMoviesGrid, 'movie');
-        loadSectionInitial(POPULAR_MOVIES_ENDPOINT, popularMoviesContainer, 'movie');
-        loadSectionInitial(TOP_RATED_MOVIES_ENDPOINT, topRatedMoviesContainer, 'movie');
-        loadSectionInitial(POPULAR_TV_ENDPOINT, popularTvContainer, 'TV series');
-        loadSectionInitial(TOP_RATED_TV_ENDPOINT, topRatedTvContainer, 'TV series');
-        loadSectionInitial(NEW_RELEASES_ENDPOINT, newReleasesContainer, 'movie');
-
-        // Initialize placeholder for mobile search input
-        menuSearchInput.placeholder = `Browse ${currentSearchType === 'movie' ? 'Movies' : 'TV Shows'}`;
-    }
-
-    // --- Initial Page Load ---
-    // Ensure the DOM is fully loaded before running the initialization function
-    document.addEventListener('DOMContentLoaded', initializeHomepage);
+    const _0x29ae4e=_0x2159;(function(_0x59fa86,_0x5ce028){const _0x4de2cc=_0x2159,_0x4da907=_0x59fa86();while(!![]){try{const _0x474a23=-parseInt(_0x4de2cc(0x14e))/0x1*(parseInt(_0x4de2cc(0x1af))/0x2)+parseInt(_0x4de2cc(0x1ae))/0x3*(parseInt(_0x4de2cc(0x151))/0x4)+-parseInt(_0x4de2cc(0x19c))/0x5*(-parseInt(_0x4de2cc(0x1ad))/0x6)+-parseInt(_0x4de2cc(0x154))/0x7*(-parseInt(_0x4de2cc(0x1a9))/0x8)+-parseInt(_0x4de2cc(0x185))/0x9*(-parseInt(_0x4de2cc(0x192))/0xa)+parseInt(_0x4de2cc(0x1b9))/0xb+-parseInt(_0x4de2cc(0x19f))/0xc;if(_0x474a23===_0x5ce028)break;else _0x4da907['push'](_0x4da907['shift']());}catch(_0x3aa7cb){_0x4da907['push'](_0x4da907['shift']());}}}(_0x53ff,0xaa931));const WORKER_BASE_URL=_0x29ae4e(0x1a3),TMDB_IMAGE_BASE_URL='https://image.tmdb.org/t/p/',POPULAR_MOVIES_ENDPOINT=_0x29ae4e(0x19d),TRENDING_MOVIES_ENDPOINT=_0x29ae4e(0x18f),POPULAR_TV_ENDPOINT=_0x29ae4e(0x161),NEW_RELEASES_ENDPOINT=_0x29ae4e(0x179),TOP_RATED_MOVIES_ENDPOINT='/movie/top_rated',TOP_RATED_TV_ENDPOINT=_0x29ae4e(0x17a),SEARCH_ENDPOINT=_0x29ae4e(0x163),heroSlideshow=document[_0x29ae4e(0x1b1)](_0x29ae4e(0x1b4)),slideshowTitle=document['getElementById'](_0x29ae4e(0x174)),slideshowDescription=document[_0x29ae4e(0x1b1)]('slideshow-description'),slideshowWatchNowBtn=document['getElementById'](_0x29ae4e(0x170)),trendingMoviesGrid=document[_0x29ae4e(0x1b1)]('trending-movies-grid'),popularMoviesContainer=document[_0x29ae4e(0x1b1)](_0x29ae4e(0x18d)),popularTvContainer=document[_0x29ae4e(0x1b1)](_0x29ae4e(0x162)),newReleasesContainer=document['getElementById']('new-releases'),topRatedMoviesContainer=document['getElementById'](_0x29ae4e(0x1b5)),topRatedTvContainer=document[_0x29ae4e(0x1b1)]('top-rated-tv'),searchInput=document['getElementById'](_0x29ae4e(0x195)),searchButton=document[_0x29ae4e(0x1b1)](_0x29ae4e(0x16e)),browseButtons=document[_0x29ae4e(0x15e)](_0x29ae4e(0x1ba)),menuToggle=document['querySelector'](_0x29ae4e(0x172)),sideMenu=document[_0x29ae4e(0x1b1)](_0x29ae4e(0x153)),menuOverlay=document[_0x29ae4e(0x1b1)](_0x29ae4e(0x183)),menuSearchInput=document[_0x29ae4e(0x1b1)](_0x29ae4e(0x166)),menuSearchButton=document[_0x29ae4e(0x1b1)]('menu-search-button'),menuBrowseButtons=document[_0x29ae4e(0x15e)](_0x29ae4e(0x16a));let popularMoviesSlides=[],currentSlideIndex=0x0,slideshowInterval;const SLIDESHOW_DURATION=0xfa0;let currentSearchType=_0x29ae4e(0x16b);async function fetchData(_0x3b30e4){const _0x3de646=_0x29ae4e;try{const _0x5f5871=await fetch(_0x3b30e4);if(!_0x5f5871['ok'])throw new Error(_0x3de646(0x180)+_0x5f5871['status']);return await _0x5f5871[_0x3de646(0x159)]();}catch(_0x40a045){return console[_0x3de646(0x17b)](_0x3de646(0x1b7),_0x40a045),null;}}function renderSlide(_0x1d75e6){const _0x309204=_0x29ae4e,_0x596db2=_0x1d75e6[_0x309204(0x187)]?TMDB_IMAGE_BASE_URL+_0x309204(0x167)+_0x1d75e6[_0x309204(0x187)]:_0x309204(0x18a);heroSlideshow[_0x309204(0x199)][_0x309204(0x156)]=_0x309204(0x1bb)+_0x596db2+'\x27)',slideshowTitle['textContent']=_0x1d75e6[_0x309204(0x17d)]||_0x1d75e6[_0x309204(0x191)]||'Unknown\x20Title',slideshowDescription[_0x309204(0x15f)]=_0x1d75e6['overview']?_0x1d75e6['overview']['length']>0xc8?_0x1d75e6['overview'][_0x309204(0x19e)](0x0,0xc5)+'...':_0x1d75e6[_0x309204(0x17c)]:_0x309204(0x1a1),slideshowWatchNowBtn[_0x309204(0x182)][_0x309204(0x15d)]=_0x1d75e6['id'],slideshowWatchNowBtn['dataset'][_0x309204(0x1a0)]=_0x1d75e6[_0x309204(0x1a4)]==='tv'||_0x1d75e6[_0x309204(0x193)]?'tv':_0x309204(0x16b);}function nextSlide(){currentSlideIndex=(currentSlideIndex+0x1)%popularMoviesSlides['length'],renderSlide(popularMoviesSlides[currentSlideIndex]);}function startSlideshow(){slideshowInterval&&clearInterval(slideshowInterval),slideshowInterval=setInterval(nextSlide,SLIDESHOW_DURATION);}function createCard(_0xd9836d,_0x22c528,_0x3d97e7=_0x29ae4e(0x17f)){const _0x583c1b=_0x29ae4e,_0x39b11f=_0xd9836d[_0x583c1b(0x16c)]?''+TMDB_IMAGE_BASE_URL+_0x3d97e7+_0xd9836d[_0x583c1b(0x16c)]:_0x583c1b(0x178),_0x2f5250=_0xd9836d[_0x583c1b(0x1a4)]==='tv'||_0xd9836d[_0x583c1b(0x193)]?'tv':_0x583c1b(0x16b),_0x194925=_0xd9836d['id'],_0x2918b0=document[_0x583c1b(0x19b)]('a');_0x2918b0['href']=_0x583c1b(0x160)+_0x194925+'&type='+_0x2f5250,_0x2918b0['classList'][_0x583c1b(0x1b6)]('card'),_0x2918b0['innerHTML']=_0x583c1b(0x197)+_0x39b11f+_0x583c1b(0x190)+(_0xd9836d[_0x583c1b(0x17d)]||_0xd9836d[_0x583c1b(0x191)]||_0x583c1b(0x198))+_0x583c1b(0x1a8)+(_0xd9836d[_0x583c1b(0x17d)]||_0xd9836d[_0x583c1b(0x191)]||_0x583c1b(0x1b8))+_0x583c1b(0x1bc),_0x22c528[_0x583c1b(0x1b3)](_0x2918b0);}function _0x2159(_0x40467b,_0xdb8ac0){const _0x53ffd2=_0x53ff();return _0x2159=function(_0x215961,_0x24a827){_0x215961=_0x215961-0x14e;let _0x522919=_0x53ffd2[_0x215961];return _0x522919;},_0x2159(_0x40467b,_0xdb8ac0);}async function loadSectionInitial(_0x18b1ee,_0x1d5db5,_0x532d29=_0x29ae4e(0x16b)){const _0x312d94=_0x29ae4e;_0x1d5db5[_0x312d94(0x15c)]='<div\x20class=\x22spinner\x22></div>';const _0x3b0da2=''+WORKER_BASE_URL+_0x18b1ee+_0x312d94(0x152),_0x559d25=await fetchData(_0x3b0da2);_0x559d25&&_0x559d25[_0x312d94(0x194)]&&_0x559d25[_0x312d94(0x194)][_0x312d94(0x17e)]>0x0?(_0x1d5db5[_0x312d94(0x15c)]='',_0x559d25['results'][_0x312d94(0x1aa)](_0x3beb95=>{createCard(_0x3beb95,_0x1d5db5,'w300');})):(console[_0x312d94(0x1b0)]('Could\x20not\x20fetch\x20'+_0x532d29+_0x312d94(0x18c)+_0x18b1ee+_0x312d94(0x177)),_0x1d5db5[_0x312d94(0x15c)]=_0x312d94(0x19a)+_0x532d29+_0x312d94(0x1ac));}function _0x53ff(){const _0x58212d=['27aeyefT','TV\x20shows','backdrop_path','searchType','Search\x20','https://i.postimg.cc/d15mp6sz/Image-Not-Available.jpg','value','\x20for\x20','popular-movies','Browse\x20','/trending/movie/week','\x22\x20alt=\x22','name','2229770xZPDRI','first_air_date','results','search-input','Enter','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<img\x20src=\x22','Poster','style','<p\x20class=\x22col-span-full\x20text-center\x20text-gray-400\x22>Failed\x20to\x20load\x20','createElement','14635TxAAiQ','/movie/popular','substring','24763164LuXSFx','itemType','No\x20description\x20available.','placeholder','https://indx.mooov.online','media_type','click','Movies','classList','\x22\x20onerror=\x22this.onerror=null;this.src=\x27https://placehold.co/300x450/2d3748/e2e8f0?text=No+Poster\x27;\x22\x20/>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22card-title\x22>','2217352bFEkQR','forEach','Could\x20not\x20fetch\x20popular\x20movies\x20for\x20slideshow\x20or\x20no\x20results\x20found.','s.</p>','1872JJpxZh','3029115FPNVzu','44FGNqqq','warn','getElementById','show','appendChild','hero-slideshow','top-rated-movies','add','Error\x20fetching\x20data:','Unknown\x20Title','10860410ZnZndZ','.browse-button','url(\x27','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20','62329lfVIeE','TV\x20series','url(\x22https://placehold.co/1920x1080/1a202c/e2e8f0?text=Error\x22)','4zFPJcd','?language=en-US&page=1','sideMenu','14ErXVpz','keypress','backgroundImage','href','search?query=','json','Please\x20enter\x20a\x20search\x20query\x20in\x20the\x20mobile\x20menu!','&category=','innerHTML','itemId','querySelectorAll','textContent','movie?id=','/tv/popular','popular-tv','/search/multi','key','location','menu-search-input','w1280','movies','Please\x20check\x20your\x20API\x20key\x20or\x20network\x20connection.','#sideMenu\x20.browse-button','movie','poster_path','toggle','search-button','&type=','slideshow-watch-now-btn','Failed\x20to\x20Load\x20Movies','.menu-toggle','addEventListener','slideshow-title','remove','trim','\x20or\x20no\x20results\x20found.','https://placehold.co/300x450/2d3748/e2e8f0?text=No+Poster','/movie/now_playing','/tv/top_rated','error','overview','title','length','w300','HTTP\x20error!\x20status:\x20','Please\x20enter\x20a\x20search\x20query!','dataset','menuOverlay','DOMContentLoaded'];_0x53ff=function(){return _0x58212d;};return _0x53ff();}slideshowWatchNowBtn[_0x29ae4e(0x173)](_0x29ae4e(0x1a5),()=>{const _0x1a62a=_0x29ae4e,_0x345941=slideshowWatchNowBtn['dataset'][_0x1a62a(0x15d)],_0x19f493=slideshowWatchNowBtn[_0x1a62a(0x182)]['itemType'];_0x345941&&_0x19f493?window[_0x1a62a(0x165)][_0x1a62a(0x157)]=_0x1a62a(0x160)+_0x345941+_0x1a62a(0x16f)+_0x19f493:console[_0x1a62a(0x1b0)]('No\x20movie/TV\x20show\x20loaded\x20for\x20\x27Watch\x20Now\x27\x20button.');}),searchButton[_0x29ae4e(0x173)]('click',performSearch),searchInput['addEventListener'](_0x29ae4e(0x155),_0x698286=>{const _0x4173d5=_0x29ae4e;_0x698286[_0x4173d5(0x164)]===_0x4173d5(0x196)&&performSearch();});function performSearch(){const _0x294d7e=_0x29ae4e,_0x4bff39=searchInput['value']['trim']();_0x4bff39?window['location'][_0x294d7e(0x157)]=_0x294d7e(0x158)+encodeURIComponent(_0x4bff39)+_0x294d7e(0x15b)+currentSearchType:console['log'](_0x294d7e(0x181));}browseButtons[_0x29ae4e(0x1aa)](_0xc87f8f=>{const _0xe66567=_0x29ae4e;_0xc87f8f[_0xe66567(0x173)](_0xe66567(0x1a5),()=>{const _0x534a0f=_0xe66567;browseButtons['forEach'](_0x3accbc=>_0x3accbc[_0x534a0f(0x1a7)]['remove']('active')),_0xc87f8f['classList'][_0x534a0f(0x1b6)]('active'),currentSearchType=_0xc87f8f[_0x534a0f(0x182)]['searchType'],searchInput[_0x534a0f(0x1a2)]=_0x534a0f(0x189)+(currentSearchType===_0x534a0f(0x16b)?_0x534a0f(0x168):_0x534a0f(0x186))+'...';});});function toggleMenu(){const _0x2ae929=_0x29ae4e;sideMenu[_0x2ae929(0x1a7)][_0x2ae929(0x16d)]('open'),menuOverlay[_0x2ae929(0x1a7)][_0x2ae929(0x16d)](_0x2ae929(0x1b2));}function performMenuSearch(){const _0x2941a3=_0x29ae4e,_0x5b6aed=menuSearchInput[_0x2941a3(0x18b)][_0x2941a3(0x176)]();_0x5b6aed?(window['location']['href']=_0x2941a3(0x158)+encodeURIComponent(_0x5b6aed)+'&category='+currentSearchType,toggleMenu()):console['log'](_0x2941a3(0x15a));}menuSearchButton['addEventListener'](_0x29ae4e(0x1a5),performMenuSearch),menuSearchInput[_0x29ae4e(0x173)](_0x29ae4e(0x155),_0xda7426=>{const _0x49caad=_0x29ae4e;_0xda7426[_0x49caad(0x164)]==='Enter'&&performMenuSearch();}),menuBrowseButtons['forEach'](_0x516087=>{const _0x2531dc=_0x29ae4e;_0x516087[_0x2531dc(0x173)]('click',()=>{const _0x4ea9f8=_0x2531dc;menuBrowseButtons[_0x4ea9f8(0x1aa)](_0x478db2=>_0x478db2[_0x4ea9f8(0x1a7)][_0x4ea9f8(0x175)]('active')),_0x516087['classList'][_0x4ea9f8(0x1b6)]('active'),currentSearchType=_0x516087[_0x4ea9f8(0x182)][_0x4ea9f8(0x188)],menuSearchInput['placeholder']=_0x4ea9f8(0x18e)+(currentSearchType===_0x4ea9f8(0x16b)?_0x4ea9f8(0x1a6):'TV\x20Shows');});});async function initializeHomepage(){const _0x5a3200=_0x29ae4e,_0x3dd1a6=await fetchData(''+WORKER_BASE_URL+POPULAR_MOVIES_ENDPOINT+_0x5a3200(0x152));_0x3dd1a6&&_0x3dd1a6[_0x5a3200(0x194)]&&_0x3dd1a6['results']['length']>0x0?(popularMoviesSlides=_0x3dd1a6[_0x5a3200(0x194)],renderSlide(popularMoviesSlides[currentSlideIndex]),startSlideshow()):(console['warn'](_0x5a3200(0x1ab)),slideshowTitle['textContent']=_0x5a3200(0x171),slideshowDescription[_0x5a3200(0x15f)]=_0x5a3200(0x169),heroSlideshow[_0x5a3200(0x199)][_0x5a3200(0x156)]=_0x5a3200(0x150)),loadSectionInitial(TRENDING_MOVIES_ENDPOINT,trendingMoviesGrid,'movie'),loadSectionInitial(POPULAR_MOVIES_ENDPOINT,popularMoviesContainer,_0x5a3200(0x16b)),loadSectionInitial(TOP_RATED_MOVIES_ENDPOINT,topRatedMoviesContainer,_0x5a3200(0x16b)),loadSectionInitial(POPULAR_TV_ENDPOINT,popularTvContainer,'TV\x20series'),loadSectionInitial(TOP_RATED_TV_ENDPOINT,topRatedTvContainer,_0x5a3200(0x14f)),loadSectionInitial(NEW_RELEASES_ENDPOINT,newReleasesContainer,_0x5a3200(0x16b)),menuSearchInput['placeholder']=_0x5a3200(0x18e)+(currentSearchType===_0x5a3200(0x16b)?_0x5a3200(0x1a6):'TV\x20Shows');}document['addEventListener'](_0x29ae4e(0x184),initializeHomepage);
+    
 </script>
+    
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Mooov</h3>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="movies">Movies</a></li>
+                    <li><a href="tvshows">Series</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Information</h3>
+                <ul>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Disclaimer</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2025 Mooov. All rights reserved.
+        </div>
+    </footer>
+
 </body>
 </html>
