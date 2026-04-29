@@ -4,23 +4,23 @@ import xml.etree.ElementTree as ET
 import html
 from datetime import datetime
 
-# API URLs
+# Base configurations
+BASE_URL = "https://mooov.online"
+SITEMAP_FILE = "sitemap.xml"
+
+# Popular movies සඳහා පිටු 1 සිට 4 දක්වා සහ අනෙක් ඒවා සඳහා page 1 පමණක් ලබා ගන්නා ලෙස සකස් කළ ලැයිස්තුව
 API_CONFIG = [
-    {"url": "https://stmap.mooov.online/movie/popular?language=en-US&page=1", "type": "movie"},
     {"url": "https://stmap.mooov.online/movie/top_rated?language=en-US&page=1", "type": "movie"},
     {"url": "https://stmap.mooov.online/tv/popular?language=en-US&page=1", "type": "tv"},
     {"url": "https://stmap.mooov.online/tv/top_rated?language=en-US&page=1", "type": "tv"}
 ]
 
-BASE_URL = "https://mooov.online"
-SITEMAP_FILE = "sitemap.xml"
-
 def generate_sitemap():
     today = datetime.now().strftime('%Y-%m-%d')
-    url_date_map = {} # URL
+    url_date_map = {}
 
     try:
-        # 1.
+        # 1. පවතින Sitemap එක කියවීම
         if os.path.exists(SITEMAP_FILE):
             try:
                 tree = ET.parse(SITEMAP_FILE)
@@ -29,52 +29,55 @@ def generate_sitemap():
                 for url_tag in root.findall('ns:url', ns):
                     loc = url_tag.find('ns:loc', ns).text
                     lastmod = url_tag.find('ns:lastmod', ns)
-                    
                     clean_url = html.unescape(loc)
-                    # 
-                    if lastmod is not None:
-                        url_date_map[clean_url] = lastmod.text
-                    else:
-                        url_date_map[clean_url] = today
+                    url_date_map[clean_url] = lastmod.text if lastmod is not None else today
             except Exception as e:
                 print(f"Error parsing old sitemap: {e}")
 
-        # 2. 
         headers = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
-        
-        # Homepage 
         homepage = f"{BASE_URL}/"
         if homepage not in url_date_map:
             url_date_map[homepage] = today
 
+        # --- Popular Movies (Pages 1 to 4) ---
+        for page in range(1, 5): # 1 සිට 4 දක්වා
+            popular_url = f"https://stmap.mooov.online/movie/popular?language=en-US&page={page}"
+            try:
+                response = requests.get(popular_url, headers=headers)
+                data = response.json()
+                for item in data.get('results', []):
+                    item_id = item.get('id')
+                    if item_id:
+                        item_url = f"{BASE_URL}/movie?id={item_id}&type=movie"
+                        if item_url not in url_date_map:
+                            url_date_map[item_url] = today
+                print(f"Fetched Popular Movies: Page {page}")
+            except Exception as e:
+                print(f"Error fetching popular movie page {page}: {e}")
+
+        # --- අනෙකුත් API ලබා ගැනීම (Top Rated & TV) ---
         for config in API_CONFIG:
             try:
                 response = requests.get(config['url'], headers=headers)
-                response.raise_for_status()
                 data = response.json()
-                results = data.get('results', [])
-                for item in results:
+                for item in data.get('results', []):
                     item_id = item.get('id')
                     if item_id:
                         item_url = f"{BASE_URL}/{config['type']}?id={item_id}&type={config['type']}"
-                        # URL
                         if item_url not in url_date_map:
                             url_date_map[item_url] = today
             except Exception as e:
-                print(f"Fetch error: {e}")
+                print(f"Fetch error for {config['url']}: {e}")
 
-        # 3. XML 
+        # 3. XML ගොනුව නිර්මාණය
         sitemap_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
         sitemap_content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         
         for url in sorted(url_date_map.keys()):
             priority = "1.0" if url == homepage or url == f"{BASE_URL}" else "0.8"
-            safe_url = html.escape(url)
-            m_date = url_date_map[url]
-            
             sitemap_content += '  <url>\n'
-            sitemap_content += f'    <loc>{safe_url}</loc>\n'
-            sitemap_content += f'    <lastmod>{m_date}</lastmod>\n'
+            sitemap_content += f'    <loc>{html.escape(url)}</loc>\n'
+            sitemap_content += f'    <lastmod>{url_date_map[url]}</lastmod>\n'
             sitemap_content += f'    <priority>{priority}</priority>\n'
             sitemap_content += '  </url>\n'
         
@@ -83,7 +86,7 @@ def generate_sitemap():
         with open(SITEMAP_FILE, "w") as f:
             f.write(sitemap_content)
         
-        print("Sitemap merged with historical dates successfully!")
+        print(f"Sitemap updated successfully with {len(url_date_map)} URLs!")
 
     except Exception as e:
         print(f"General Error: {e}")
