@@ -1,92 +1,1151 @@
-import requests
-import os
-import xml.etree.ElementTree as ET
-import html
-from datetime import datetime
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Watch Now</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta8LxfdQfSnsiYVSCgKxIcnWZhprMofGnghRVlXv3rE5XQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/nLdZJ80H/mooov.png">
+   
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vg4nlzkxwi");
+</script>
+  
+  <style>
+        /* Universal box-sizing for consistent layout */
+        * {
+            box-sizing: border-box;
+        }
 
-# API URLs
-API_CONFIG = [
-    {"url": "https://stmap.mooov.online/movie/popular?language=en-US&page=1", "type": "movie"},
-    {"url": "https://stmap.mooov.online/movie/top_rated?language=en-US&page=1", "type": "movie"},
-    {"url": "https://stmap.mooov.online/tv/popular?language=en-US&page=1", "type": "tv"},
-    {"url": "https://stmap.mooov.online/tv/top_rated?language=en-US&page=1", "type": "tv"}
-]
+        /* Body styling: font, color, background */
+        body {
+            margin: 3px;
+            font-family: Nunito, sans-serif;
+            color: white;
+            background-color: #000;
+        }
 
-BASE_URL = "https://mooov.online"
-SITEMAP_FILE = "sitemap.xml"
+        /* SEARCH BOX (for desktop) */
+        .search-box {
+            max-width: 600px;
+            width: 100%;
+            margin: 20px auto;
+            padding: 10px;
+            box-sizing: border-box;
+        }
 
-def generate_sitemap():
-    today = datetime.now().strftime('%Y-%m-%d')
-    url_date_map = {} # URL
+        /* Responsive adjustments for search box on small screens */
+        @media (max-width: 600px) {
+            .search-box {
+                margin: 3px auto;
+                padding: 6px;
+            }
+        }
 
-    try:
-        # 1.
-        if os.path.exists(SITEMAP_FILE):
-            try:
-                tree = ET.parse(SITEMAP_FILE)
-                root = tree.getroot()
-                ns = {'ns': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
-                for url_tag in root.findall('ns:url', ns):
-                    loc = url_tag.find('ns:loc', ns).text
-                    lastmod = url_tag.find('ns:lastmod', ns)
-                    
-                    clean_url = html.unescape(loc)
-                    # 
-                    if lastmod is not None:
-                        url_date_map[clean_url] = lastmod.text
-                    else:
-                        url_date_map[clean_url] = today
-            except Exception as e:
-                print(f"Error parsing old sitemap: {e}")
+        /* SEARCH CONTROLS WRAPPING */
+        .search-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
 
-        # 2. 
-        headers = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
-        
-        # Homepage 
-        homepage = f"{BASE_URL}/"
-        if homepage not in url_date_map:
-            url_date_map[homepage] = today
+        /* FORM ELEMENTS - common styles */
+        #category-toggle,
+        #search-input,
+        #search-button {
+            min-width: 0; /* Allows elements to shrink */
+            box-sizing: border-box;
+        }
 
-        for config in API_CONFIG:
-            try:
-                response = requests.get(config['url'], headers=headers)
-                response.raise_for_status()
-                data = response.json()
-                results = data.get('results', [])
-                for item in results:
-                    item_id = item.get('id')
-                    if item_id:
-                        item_url = f"{BASE_URL}/{config['type']}?id={item_id}&type={config['type']}"
-                        # URL
-                        if item_url not in url_date_map:
-                            url_date_map[item_url] = today
-            except Exception as e:
-                print(f"Fetch error: {e}")
+        /* INDIVIDUAL STYLES for search bar elements */
+        #category-toggle {
+            padding: 0.6rem;
+            border-radius: 8px;
+            background: #222;
+            color: #fff;
+            border: 1px solid #555;
+        }
 
-        # 3. XML 
-        sitemap_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
-        sitemap_content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-        
-        for url in sorted(url_date_map.keys()):
-            priority = "1.0" if url == homepage or url == f"{BASE_URL}" else "0.8"
-            safe_url = html.escape(url)
-            m_date = url_date_map[url]
+        #search-input {
+            flex: 1; /* Allows input to take available space */
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #555;
+            background-color: #111;
+            color: #fff;
+        }
+
+        /* Styles for search results container (if implemented) */
+        #search-results {
+            background-color: #222;
+            color: white;
+            border-radius: 5px;
+            margin-top: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .search-result-item {
+            padding: 10px;
+            border-bottom: 1px solid #444;
+            cursor: pointer;
+        }
+
+        .search-result-item:hover {
+            background-color: #333;
+        }
+
+        /* Search button styling */
+        #search-button {
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            border: none;
+            background-color: #00ffff; /* Cyan-like color */
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: 600;
+            font-family: Nunito, sans-serif;
+            box-shadow: 0 2px 8px rgba(0, 255, 255, 0.5); /* Matching shadow */
+            transition: all 0.3s ease;
+        }
+
+        #search-button:hover {
+            background-color: rgba(0,255,255, 0.8); /* Slightly darker cyan on hover */
+            transform: scale(1.05); /* Slight scale effect on hover */
+        }
+
+        /* RESPONSIVE FOR SMALL SCREENS (existing search bar) */
+        @media (max-width: 600px) {
+            .search-controls {
+                flex-direction: column; /* Stack elements vertically */
+            }
+
+            #category-toggle,
+            #search-input,
+            #search-button {
+                width: 100%; /* Full width on small screens */
+            }
+        }
+
+        .spinner {
+            border: 8px solid #333;
+            border-top: 8px solid #00ffff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 50px auto;
+        }
+
+        /* Splash Screen styling */
+        #splash {
+            position: fixed;
+            z-index: 9999; /* Ensure it's on top */
+            background-color: #000;
+            color: white;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-family: Nunito, sans-serif;
+            flex-direction: column;
+            animation: fadeIn 0.3s ease-in-out; /* Initial fade-in */
+        }
+
+        /* Keyframe animation for fade out */
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        /* Keyframe animation for fade in */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Background image with blur effect */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-position: center;
+            background-size: cover;
+            filter: blur(20px); /* Blur effect */
+            z-index: -2; /* Behind content */
+        }
+
+        /* Overlay for background dimming */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.65); /* Semi-transparent black */
+            z-index: -1; /* Between background and content */
+        }
+
+        /* Main content container */
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 2rem;
+        }
+
+        /* Responsive padding for container on small screens */
+        @media (max-width: 600px) {
+            .container {
+                padding: 0.5rem;
+            }
+        }
+
+        /* Movie header section (poster and info) */
+        .movie-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 2rem;
+        }
+
+        /* Movie information section */
+        .movie-info {
+            margin-top: 10px;
+            flex: 2; /* Takes more space than poster */
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        /* Movie title styling */
+        .movie-info h1 {
+            margin-top: 0;
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 0 0 0.5rem 0;
+            font-size: 2.5rem; /* Adjusted for better fit */
+        }
+
+        /* Hide/show elements based on device (desktop vs. mobile) */
+        .desktop-only {
+            display: block;
+        }
+        .mobile-only {
+            display: none;
+        }
+
+        /* Responsive visibility for desktop/mobile elements */
+        @media (max-width: 768px) {
+            .desktop-only {
+                display: none !important; /* Force hide on small screens */
+            }
+            .mobile-only {
+                display: block !important; /* Force show on small screens */
+            }
+        }
+
+        /* Menu toggle button for mobile */
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            right: 10px;
+            z-index: 11000; /* Ensure it's above everything */
+            font-size: 1.8rem;
+            color: white;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: none; /* Hidden by default, shown via media query */
+        }
+
+        /* Show menu toggle only on mobile */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        /* Side menu styling */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            right: -260px; /* Initially off-screen to the right */
+            width: 250px;
+            height: 100%;
+            background-color: #111;
+            color: white;
+            padding: 2rem 1rem;
+            transition: right 0.3s ease; /* Smooth transition for opening/closing */
+            z-index: 10000;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5); /* Shadow for depth */
+        }
+
+        /* State when menu is open */
+        .side-menu.open {
+            right: 0;
+        }
+
+        /* Overlay when menu is open to dim background */
+        .menu-overlay {
+            display: none;
+            position: fixed;
+            inset: 0; /* Top, right, bottom, left to 0 */
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 9999;
+        }
+        .menu-overlay.show {
+            display: block;
+        }
+
+        /* New menu specific styles */
+        .menu-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            color: #aaa;
+            padding-left: 10px; /* Align with list items */
+        }
+
+        .menu-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 10px; /* Increased padding slightly for better touch target */
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+            border-radius: 4px; /* Slight rounded corners */
+        }
+
+        .menu-item:hover {
+            background-color: #2a2a2a;
+        }
+
+        /* Styling for Font Awesome icons within menu items */
+        .menu-item i {
+            margin-right: 15px;
+            width: 20px; /* To maintain consistent spacing */
+            text-align: center;
+            font-size: 1.1rem; /* Adjust icon size */
+            color: white; /* Make the icon white */
+        }
+
+        /* Browse buttons container */
+        .browse-buttons {
+            display: flex;
+            margin-bottom: 20px;
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        /* Individual browse button styling */
+        .browse-button {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            background-color: transparent;
+            color: #bbb;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        /* Desktop Home Button Styling */
+.nav-home-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 1.2rem;
+    background-color: #111;
+    color: #00ffff; /* Cyan color */
+    border: 1px solid #555;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.nav-home-btn:hover {
+    background-color: #222;
+    border-color: #00ffff;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+/* Mobile ekedi meka hide wenna ona (Side menu eke thiyena nisa) */
+@media (max-width: 768px) {
+    .nav-home-btn {
+        display: none;
+    }
+}
+
+        /* Active state for browse buttons */
+        .browse-button.active {
+            background-color: #00ffff; /* Your accent color */
+            color: black; /* Text color on active button */
+            font-weight: bold;
+        }
+
+        /* Search section within the menu */
+        .search-section-menu {
+            display: flex;
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 15px; /* Added margin-top to separate from browse buttons */
+        }
+
+        /* Menu search input field */
+        #menu-search-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            background-color: transparent;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .menu-watermark {
+  position: absolute; /* Changed to absolute to position relative to its parent */
+  bottom: 20px; /* Adjust as needed from the bottom of the menu */
+  left: 50%;
+  transform: translateX(-50%);
+  color: #292929;
+  font-size: 1.0em;
+  font-weight: 200; /* Thin font weight */
+  opacity: 0.5;
+  z-index: 1; /* A lower z-index as it's inside the menu */
+  pointer-events: none;
+  /* Ensure the parent (.side-menu) has position: relative; */
+}
+
+        /* Menu search button */
+        #menu-search-button {
+            background-color: transparent;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Styling for Font Awesome icon within menu search button */
+        #menu-search-button i {
+            color: white; /* Make the icon white */
+            font-size: 1.2rem;
+        }
+
+        /* Smaller font size for movie title on mobile devices */
+        @media (max-width: 600px) {
+            .movie-info h1 {
+                font-size: 1.8rem;
+                margin: 0 0 0.5rem 0;
+            }
+        }
+
+        /* Genres container */
+        .genres {
+            margin: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        /* Individual genre tag styling */
+        .genre-tag {
+            display: inline-block;
+            background-color: rgba(255, 0, 0, 0.0); /* Transparent background */
+            color: white;
+            padding: 0.4rem 1rem;
+            margin: 0.3rem 0.3rem 0 0;
+            border-radius: 999px; /* Pill shape */
+            font-size: 0.9rem;
+            border: 2px solid #00ffff; /* Cyan border */
+        }
+
+        /* --- Corrected Media Query for 600px breakpoint for genre tags and margins --- */
+        @media (max-width: 600px) {
+            .genre-tag {
+                font-size: 0.7rem;
+                padding: 0.3rem 0.7rem;
+            }
+
+            .genres {
+                margin-bottom: 1rem;
+            }
+        }
+        /* --- End of Corrected Media Query --- */
+
+        /* Poster section */
+        .poster {
+            flex: 1;
+        }
+
+        /* Poster image styling */
+        .poster img {
+            width: 90%; /* Responsive width */
+            border-radius: 12px;
+        }
+
+        /* Cast section styling */
+        .cast-section {
+            margin-top: 2rem;
+            padding-bottom: 1rem;
+        }
+
+        /* Cast grid layout (Desktop default) */
+        .cast-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Responsive grid columns */
+            gap: 1rem;
+        }
+
+        /* Individual cast member styling (Desktop default) */
+        .cast-member {
+            text-align: center;
+            display: flex; /* Using flexbox for internal alignment */
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow: hidden; /* Prevent content overflow within the member box */
+        }
+
+        .cast-member img {
+            width: 100%;
+            border-radius: 10px;
+            height: 140px;
+            object-fit: cover; /* Ensures images fill their space without distortion */
+        }
+
+        /* Style for cast member names (assuming they are in a <p> tag within .cast-member) */
+        .cast-member p {
+            margin-top: 5px; /* Space between image and name */
+            font-size: 0.9rem; /* Default font size */
+            white-space: normal; /* Allow text to wrap naturally */
+            overflow: hidden; /* Hide overflowing text */
+            text-overflow: ellipsis; /* Add ellipsis for clipped text */
+            max-height: 2.4em; /* Limit to approx 2 lines */
+            line-height: 1.2;
+        }
+
+        /* Iframe player styling */
+        iframe {
+            margin-top: 3rem;
+            width: 100%;
+            height: 500px; /* Fixed height, consider responsive adjustments if needed */
+            border: none;
+            border-radius: 12px;
+        }
+
+        /* Server selector buttons CSS */
+        .server-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 2rem;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .server-selector .label {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-right: 5px;
+            font-weight: 600;
+        }
+
+        .server-btn {
+            padding: 8px 18px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ccc;
+            font-size: 0.85rem;
+            font-family: Nunito, sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .server-btn:hover {
+            border-color: #00ffff;
+            color: white;
+            background: rgba(0, 255, 255, 0.08);
+        }
+
+        .server-btn.active {
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff;
+            box-shadow: 0 0 12px rgba(0, 255, 255, 0.2);
+        }
+
+        @media (max-width: 600px) {
+            .server-btn {
+                padding: 6px 14px;
+                font-size: 0.78rem;
+            }
+        }
+
+        /* Seasons horizontal scroll container */
+        #seasons {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto; /* Enable horizontal scrolling */
+            padding-bottom: 1rem;
+            scrollbar-width: thin; /* Firefox scrollbar styling */
+        }
+
+        /* Season button styling */
+        .season-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            white-space: nowrap; /* Prevent text wrapping */
+            transition: border-color 0.3s, background-color 0.3s;
+            font-weight: 600;
+            color: white;
+        }
+
+        /* Active state for season buttons */
+        .season-button.active {
+            border-color: #00ffff; /* Your accent color */
+            background-color: rgba(0, 255, 255, 0.3); /* Transparent accent color */
+            color: white;
+        }
+
+        /* Episodes selector container */
+        #episodes {
+            margin-top: 1rem;
+            display: flex;
+            flex-wrap: wrap; /* Allow episodes to wrap to next line */
+            gap: 1rem;
+        }
+
+        /* Episode button styling */
+        .episode-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: border-color 0.3s, background-color 0.3s;
+            white-space: nowrap;
+            color: white;
+        }
+
+        /* Active state for episode buttons */
+        .episode-button.active {
+            border-color: #00ffff; /* Your accent color */
+            background-color: rgba(0, 255, 255, 0.3); /* Transparent accent color */
+            color: white;
+        }
+
+        /* --- Responsive adjustments for mobile devices (up to 768px wide) --- */
+        @media (max-width: 768px) {
+            .movie-header {
+                flex-direction: column; /* Stack poster and info vertically */
+            }
+
+            .poster {
+                display: none; /* Hide poster on small screens to save space */
+            }
+
+            .background {
+                filter: blur(8px); /* Less blur on small screens */
+            }
+
+            /* Mobile-specific cast grid styles: Max 4 cast members in one row */
+            .cast-grid {
+                grid-template-columns: repeat(4, 1fr); /* Exactly 4 columns on mobile */
+                gap: 0.5rem; /* Smaller gap for mobile */
+                overflow: hidden; /* Crucial: Hides anything beyond the first row */
+                /* white-space: nowrap; // Removed to allow text within cast-member to wrap if needed */
+
+                /* Hide scrollbars for a clean look */
+                scrollbar-width: none; /* For Firefox */
+                -ms-overflow-style: none;  /* For IE/Edge */
+            }
+
+            /* Hide scrollbars for Webkit browsers (Chrome, Safari) */
+            .cast-grid::-webkit-scrollbar {
+                display: none;
+            }
+
+            .cast-member img {
+                max-width: 85px; /* Smaller image size for mobile */
+                height: 110px; /* Keep consistent height for circular images */
+                border-radius: 8px; /* Optional: for circular cast images */
+            }
+
+            .cast-member p { /* Adjust font size for cast names on mobile */
+                /* Fluid font sizing: min 0.6rem, scales with viewport, max 0.8rem */
+                font-size: clamp(0.4rem, 1vw + 0.2rem, 0.6rem);
+                margin-top: 3px; /* Smaller margin for mobile */
+            }
             
-            sitemap_content += '  <url>\n'
-            sitemap_content += f'    <loc>{safe_url}</loc>\n'
-            sitemap_content += f'    <lastmod>{m_date}</lastmod>\n'
-            sitemap_content += f'    <priority>{priority}</priority>\n'
-            sitemap_content += '  </url>\n'
+            
+        }
+    </style>
+
+</head>
+<body>
+
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+    <div class="search-box desktop-only">
+    <div class="search-controls">
+        <a href="index" class="nav-home-btn" title="Home">
+            <i class="fas fa-home"></i>
+        </a>
         
-        sitemap_content += '</urlset>'
+        <input type="text" id="search-input" placeholder="Search for a movie or TV show..." />
+        <select id="category-toggle">
+            <option value="movie">Movies</option>
+            <option value="tv">TV Shows</option>
+        </select>
+        <button id="search-button">Search</button>
+    </div>
+</div>
 
-        with open(SITEMAP_FILE, "w") as f:
-            f.write(sitemap_content)
-        
-        print("Sitemap merged with historical dates successfully!")
+    <nav id="sideMenu" class="side-menu mobile-only">
+        <div class="menu-header">Menu</div>
+        <ul class="menu-list">
+            <li><a href="index" class="menu-item"><i class="fas fa-home"></i> Home</a></li> 
+            <li><a href="movies" class="menu-item"><i class="fas fa-film"></i> Movies</a></li>
+            <li><a href="tvshows" class="menu-item"><i class="fas fa-tv"></i> Tv Series</a></li>
+        </ul>
 
-    except Exception as e:
-        print(f"General Error: {e}")
+        <div class="menu-header">Browse</div>
+        <div class="browse-buttons">
+            <button class="browse-button active" data-category="movie"></i> Movies</button>
+            <button class="browse-button" data-category="tv"></i> TV Shows</button>
+        </div>
 
-if __name__ == "__main__":
-    generate_sitemap()
+        <div class="search-section-menu">
+            <input type="search" id="menu-search-input" placeholder="Browse Movies" />
+            <button id="menu-search-button"><i class="aresp search-resp"></i></button>
+        </div>
+        <div class="menu-watermark">S H E H A N J</div>
+    </nav>
+
+    <div id="menuOverlay" class="menu-overlay" onclick="toggleMenu()"></div>
+
+    <div id="splash">
+        <div>🎬 Loading...</div>
+    </div>
+
+    <div class="background" id="bg-blur"></div>
+    <div class="overlay"></div>
+
+    <div class="container">
+        <div class="movie-header">
+            <div class="movie-info">
+                <h1 id="title">Loading...</h1>
+                <div id="runtime"></div>
+                <div class="genres" id="genres"></div>
+                <p id="overview"></p>
+                <div class="cast-section" id="cast-section" style="display:none;">
+                    <h2>Top Cast</h2>
+                    <div class="cast-grid" id="cast"></div>
+                </div>
+            </div>
+            <div class="poster">
+                <img id="poster" src="" alt="Poster" />
+            </div>
+        </div>
+
+        <div id="seasons" style="display:none;"></div>
+        <div id="episodes" style="display:none;"></div>
+
+        <div id="player"></div>
+    </div>
+
+    <script>
+        /**
+         * Decodes HTML entities in a string.
+         * @param {string} html - The HTML string to decode.
+         * @returns {string} The decoded plain text.
+         */
+        function decodeHTML(html) {
+            const txt = document.createElement("textarea");
+            txt.innerHTML = html;
+            return txt.value;
+        }
+
+        // Get ID and type from URL parameters
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+        const type = params.get("type"); // "movie" or "tv"
+
+        let seasonsData = []; // Stores TV show seasons data
+        let currentSeason = null; // Tracks the currently selected season
+        let currentEpisode = null; // Tracks the currently selected episode
+
+        /**
+         * Loads and displays movie/TV show details from the API.
+         */
+        async function loadDetails() {
+            try {
+                // Fetch details from the Cloudflare Worker API
+                const res = await fetch(`https://getdetails.mooov.online/details?id=${id}&type=${type}`);
+                const data = await res.json();
+
+                // Set title & year
+                const title = data.title || data.name || "Untitled";
+                const year = data.releaseYear || '';
+                let fullTitle = decodeHTML(title);
+                if (year) {
+                    fullTitle += ` (${year})`;
+                }
+                document.getElementById("title").textContent = fullTitle;
+
+                // Set overview
+                document.getElementById("overview").textContent = decodeHTML(data.overview || "");
+
+                // Set runtime (if available)
+                document.getElementById("runtime").textContent = data.runtime ? `Runtime: ${data.runtime}` : "";
+
+                // Set poster and background blur image
+                const posterUrl = data.poster || "";
+                document.getElementById("poster").src = posterUrl;
+                document.getElementById("bg-blur").style.backgroundImage = posterUrl ? `url('${posterUrl}')` : "none";
+
+                // Render genres
+                const genreContainer = document.getElementById("genres");
+                genreContainer.innerHTML = "";
+                if (Array.isArray(data.genres)) {
+                    data.genres.forEach(genre => {
+                        const tag = document.createElement("span");
+                        tag.className = "genre-tag";
+                        tag.textContent = decodeHTML(genre);
+                        genreContainer.appendChild(tag);
+                    });
+                }
+
+                // Render cast (only if available)
+                const castSection = document.getElementById("cast-section");
+                const castContainer = document.getElementById("cast");
+
+                if (Array.isArray(data.cast) && data.cast.length > 0) {
+                    castContainer.innerHTML = "";
+                    // Display up to 6 cast members
+                    data.cast.slice(0, 4).forEach(person => {
+                        const div = document.createElement("div");
+                        div.className = "cast-member";
+                        div.innerHTML = `
+                            <img src="${person.image || 'https://i.postimg.cc/d15mp6sz/Image-Not-Available.jpg'}" alt="${person.name}" />
+                            <div>${decodeHTML(person.name)}</div>
+                        `;
+                        castContainer.appendChild(div);
+                    });
+                    castSection.style.display = "block"; // Show cast section
+                } else {
+                    castSection.style.display = "none"; // Hide cast section if no cast
+                }
+
+                // Handle TV show specific logic (seasons and episodes)
+                if (type === "tv") {
+                    seasonsData = data.seasons || [];
+                    if (seasonsData.length === 0) {
+                        // Hide season/episode selectors if no seasons
+                        document.getElementById("seasons").style.display = "none";
+                        document.getElementById("episodes").style.display = "none";
+                    } else {
+                        renderSeasons(seasonsData);
+                        // Automatically select the first season and its first episode
+                        selectSeason(seasonsData[0].sn_num);
+                    }
+                } else if (type === "movie") {
+                    // For movies, hide season/episode selectors and directly embed the player
+                    document.getElementById("seasons").style.display = "none";
+                    document.getElementById("episodes").style.display = "none";
+                    renderPlayer(id, null, null); // Season and episode are null for movies
+                }
+
+                // Hide splash screen with a fade-out animation
+                document.getElementById("splash").style.animation = "fadeOut 1s forwards";
+                setTimeout(() => {
+                    document.getElementById("splash").style.display = "none";
+                }, 1000);
+
+            } catch (err) {
+                console.error("Failed to load details:", err);
+                // Display a user-friendly message instead of alert()
+                document.getElementById("splash").innerHTML = `
+                    <div style="color: red; text-align: center;">
+                        Failed to load details. Please try again later.
+                        <br><br>
+                        <button onclick="window.location.reload()" style="padding: 10px 20px; background-color: #00ffff; color: black; border: none; border-radius: 8px; cursor: pointer;">Reload</button>
+                    </div>
+                `;
+                document.getElementById("splash").style.display = "flex"; // Keep splash visible with error
+                document.getElementById("splash").style.animation = "none"; // Stop fade out
+            }
+        }
+
+        /**
+         * Renders season buttons for a TV show.
+         * @param {Array} seasons - An array of season objects.
+         */
+        function renderSeasons(seasons) {
+            const seasonsContainer = document.getElementById("seasons");
+            seasonsContainer.style.display = "flex"; // Show seasons container
+            seasonsContainer.innerHTML = ""; // Clear existing buttons
+            seasons.forEach(season => {
+                const btn = document.createElement("button");
+                btn.textContent = `Season ${season.sn_num}`;
+                btn.className = "season-button";
+                btn.onclick = () => selectSeason(season.sn_num);
+                btn.id = `season-btn-${season.sn_num}`; // Unique ID for highlighting
+                seasonsContainer.appendChild(btn);
+            });
+        }
+
+        /**
+         * Selects a season and renders its episodes.
+         * @param {number} seasonNumber - The number of the season to select.
+         */
+        function selectSeason(seasonNumber) {
+            currentSeason = seasonsData.find(s => s.sn_num === seasonNumber);
+            if (!currentSeason) return;
+
+            // Remove 'active' class from all season buttons
+            document.querySelectorAll(".season-button").forEach(btn => btn.classList.remove("active"));
+            // Add 'active' class to the selected season button
+            const activeBtn = document.getElementById(`season-btn-${seasonNumber}`);
+            if (activeBtn) activeBtn.classList.add("active");
+
+            renderEpisodes(currentSeason.episodes || []);
+            // Auto select the first episode in the season if available
+            if (currentSeason.episodes && currentSeason.episodes.length > 0) {
+                selectEpisode(currentSeason.episodes[0].ep_number);
+            } else {
+                // If no episodes in the selected season, clear the player
+                renderPlayer(null, null, null);
+            }
+        }
+
+        /**
+         * Renders episode buttons for a selected season.
+         * @param {Array} episodes - An array of episode objects.
+         */
+        function renderEpisodes(episodes) {
+            const episodesContainer = document.getElementById("episodes");
+            episodesContainer.style.display = "flex"; // Show episodes container
+            episodesContainer.innerHTML = ""; // Clear existing buttons
+            episodes.forEach(ep => {
+                const btn = document.createElement("button");
+                btn.textContent = `Episode ${ep.ep_number}`;
+                btn.className = "episode-button";
+                btn.id = `episode-btn-${ep.ep_number}`; // Unique ID for highlighting
+                btn.onclick = () => selectEpisode(ep.ep_number);
+                episodesContainer.appendChild(btn);
+            });
+        }
+
+        /**
+         * Selects an episode and embeds the video player.
+         * @param {number} episodeNumber - The number of the episode to select.
+         */
+        function selectEpisode(episodeNumber) {
+            if (!currentSeason) return; // Ensure a season is selected
+            currentEpisode = currentSeason.episodes.find(ep => ep.ep_number === episodeNumber);
+            if (!currentEpisode) return;
+
+            // Remove 'active' class from all episode buttons
+            document.querySelectorAll(".episode-button").forEach(btn => btn.classList.remove("active"));
+            // Add 'active' class to the selected episode button
+            const activeBtn = document.getElementById(`episode-btn-${episodeNumber}`);
+            if (activeBtn) activeBtn.classList.add("active");
+
+            renderPlayer(id, currentSeason.sn_num, episodeNumber);
+        }
+
+        // Available streaming servers
+        const servers = [
+            { name: 'Server 1', movieUrl: (id) => `https://player.videasy.net/movie/${id}`, tvUrl: (id, s, e) => `https://player.videasy.net/tv/${id}/${s}/${e}` },
+            { name: 'Server 2', movieUrl: (id) => `https://vidsrc.icu/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.icu/embed/tv/${id}/${s}/${e}` },
+            { name: 'Server 3', movieUrl: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`, tvUrl: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` },
+            { name: 'Server 4', movieUrl: (id) => `https://vidlink.pro/movie/${id}`, tvUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}` },
+        ];
+        let currentServer = 0;
+        let lastMediaId = null, lastSeason = null, lastEpisode = null;
+
+        /**
+         * Renders the video player iframe.
+         * @param {string} mediaId - The ID of the movie/TV show.
+         * @param {number|null} season - The season number (null for movies).
+         * @param {number|null} episode - The episode number (null for movies).
+         */
+        function renderPlayer(mediaId, season, episode) {
+            lastMediaId = mediaId; lastSeason = season; lastEpisode = episode;
+            const playerContainer = document.getElementById("player");
+
+            if (!mediaId && !season && !episode) {
+                playerContainer.innerHTML = "<p style='text-align: center; margin-top: 3rem;'>No player available for this selection.</p>";
+                return;
+            }
+
+            // Build server selector buttons
+            let serverBtns = '<div class="server-selector"><span class="label"><i class="fas fa-server"></i> Server:</span>';
+            servers.forEach((srv, i) => {
+                serverBtns += `<button class="server-btn ${i === currentServer ? 'active' : ''}" onclick="switchServer(${i})">${srv.name}</button>`;
+            });
+            serverBtns += '</div>';
+
+            // Get the URL from current server
+            const srv = servers[currentServer];
+            let src;
+            if (type === "movie") {
+                src = srv.movieUrl(mediaId);
+            } else if (type === "tv" && season && episode) {
+                src = srv.tvUrl(mediaId, season, episode);
+            } else {
+                playerContainer.innerHTML = "<p style='text-align: center; margin-top: 3rem;'>No player available for this selection.</p>";
+                return;
+            }
+
+            playerContainer.innerHTML = `
+                ${serverBtns}
+                <iframe
+                    src="${src}"
+                    allowfullscreen
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                    loading="lazy"
+                    referrerpolicy="no-referrer"
+                    style="width:100%; height:500px; border:none; border-radius:12px;"
+                ></iframe>
+            `;
+        }
+
+        function switchServer(index) {
+            currentServer = index;
+            renderPlayer(lastMediaId, lastSeason, lastEpisode);
+        }
+
+        /**
+         * Toggles the visibility of the side menu and its overlay.
+         */
+        function toggleMenu() {
+            const sideMenu = document.getElementById('sideMenu');
+            const menuOverlay = document.getElementById('menuOverlay');
+            const isOpen = sideMenu.classList.toggle('open');
+            if (isOpen) {
+                menuOverlay.classList.add('show');
+            } else {
+                menuOverlay.classList.remove('show');
+            }
+        }
+
+        // --- New JavaScript for the Side Menu functionality ---
+
+        // Get references to browse buttons and menu search elements
+        const browseButtons = document.querySelectorAll('.browse-button');
+        const menuSearchInput = document.getElementById('menu-search-input');
+        const menuSearchButton = document.getElementById('menu-search-button');
+
+        // Add event listeners to "Browse" buttons within the side menu
+        browseButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove 'active' class from all browse buttons
+                browseButtons.forEach(btn => btn.classList.remove('active'));
+                // Add 'active' class to the clicked button
+                button.classList.add('active');
+                
+                // Update the placeholder text of the menu search input based on selected category
+                const selectedCategory = button.dataset.category;
+                menuSearchInput.placeholder = `Browse ${selectedCategory === 'movie' ? 'Movies' : 'TV Shows'}`;
+            });
+        });
+
+        // Handle search from the menu's browse section
+        if (menuSearchButton) {
+            menuSearchButton.addEventListener('click', () => {
+                const query = menuSearchInput.value.trim();
+                const activeBrowseButton = document.querySelector('.browse-button.active');
+                // Determine the category based on the active browse button, default to 'movie'
+                const category = activeBrowseButton ? activeBrowseButton.dataset.category : 'movie'; 
+
+                if (query) {
+                    // Redirect to search.html with query and category
+                    window.location.href = `search?query=${encodeURIComponent(query)}&category=${category}`; //removed.html
+                    toggleMenu(); // Close the menu after initiating search
+                }
+            });
+
+            // Allow Enter key to trigger search in the side menu input
+            menuSearchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    menuSearchButton.click(); // Simulate a click on the search button
+                }
+            });
+        }
+
+        // Set initial active state for browse buttons and search input placeholder on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const initialCategory = new URLSearchParams(window.location.search).get('category') || 'movie';
+            const activeButton = document.querySelector(`.browse-button[data-category="${initialCategory}"]`);
+            if (activeButton) {
+                activeButton.classList.add('active');
+                menuSearchInput.placeholder = `Browse ${initialCategory === 'movie' ? 'Movies' : 'TV Shows'}`;
+            }
+        });
+
+
+        // --- Existing JavaScript for the main desktop search ---
+// Get references to the desktop search elements
+const searchInput = document.getElementById("search-input");
+const searchButton = document.getElementById("search-button");
+
+searchButton.addEventListener("click", () => {
+    const query = searchInput.value.trim();
+    const category = document.getElementById("category-toggle").value;
+
+    if (query) {
+        // Redirect to search.html with query and category in URL
+        window.location.href = `search?query=${encodeURIComponent(query)}&category=${category}`; //removed .html
+    }
+});
+
+// Allow Enter key to search for the desktop search input
+searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        searchButton.click(); // Simulate a click on the search button
+    }
+});
+
+        // Load the details once the DOM is fully loaded
+        window.onload = loadDetails;
+
+  
+    </script>
+</body>
+</html>
