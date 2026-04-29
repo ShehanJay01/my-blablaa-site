@@ -8,7 +8,7 @@ from datetime import datetime
 BASE_URL = "https://mooov.online"
 SITEMAP_FILE = "sitemap.xml"
 
-# Popular movies සඳහා පිටු 1 සිට 4 දක්වා සහ අනෙක් ඒවා සඳහා page 1 පමණක් ලබා ගන්නා ලෙස සකස් කළ ලැයිස්තුව
+# Popular movies 
 API_CONFIG = [
     {"url": "https://stmap.mooov.online/movie/top_rated?language=en-US&page=1", "type": "movie"},
     {"url": "https://stmap.mooov.online/tv/popular?language=en-US&page=1", "type": "tv"},
@@ -20,7 +20,7 @@ def generate_sitemap():
     url_date_map = {}
 
     try:
-        # 1. පවතින Sitemap එක කියවීම
+        # 1. 
         if os.path.exists(SITEMAP_FILE):
             try:
                 tree = ET.parse(SITEMAP_FILE)
@@ -39,8 +39,8 @@ def generate_sitemap():
         if homepage not in url_date_map:
             url_date_map[homepage] = today
 
-        # --- Popular Movies (Pages 1 to 4) ---
-        for page in range(1, 5): # 1 සිට 4 දක්වා
+        # --- Popular Movies 
+        for page in range(1, 5): # 
             popular_url = f"https://stmap.mooov.online/movie/popular?language=en-US&page={page}"
             try:
                 response = requests.get(popular_url, headers=headers)
@@ -55,7 +55,7 @@ def generate_sitemap():
             except Exception as e:
                 print(f"Error fetching popular movie page {page}: {e}")
 
-        # --- අනෙකුත් API ලබා ගැනීම (Top Rated & TV) ---
+        # --- 
         for config in API_CONFIG:
             try:
                 response = requests.get(config['url'], headers=headers)
@@ -69,7 +69,7 @@ def generate_sitemap():
             except Exception as e:
                 print(f"Fetch error for {config['url']}: {e}")
 
-        # 3. XML ගොනුව නිර්මාණය
+        # 3. XML 
         sitemap_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
         sitemap_content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         
