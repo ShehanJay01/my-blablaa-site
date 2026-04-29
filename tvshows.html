@@ -3,30 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Popular TV Shows - Mooov</title>
-  <meta name="description" content="Discover the most popular TV shows and series on Mooov.">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://mooov.online/tvshows">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Popular TV Shows - Mooov">
-  <meta property="og:description" content="Discover the most popular TV shows on Mooov.">
-  <meta property="og:image" content="https://i.postimg.cc/nLdZJ80H/mooov.png">
-  <meta property="og:url" content="https://mooov.online/tvshows">
-  <meta property="og:site_name" content="Mooov">
-  <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:title" content="Popular TV Shows - Mooov">
-  <meta property="twitter:description" content="Discover the most popular TV shows on Mooov.">
-  <meta property="twitter:image" content="https://i.postimg.cc/nLdZJ80H/mooov.png">
+  <title>TV Shows</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link rel="icon" type="image/png" href="https://i.postimg.cc/nLdZJ80H/mooov.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://image.tmdb.org">
   <style>
-    .home-icon { display: flex; justify-content: center; margin-bottom: 20px; }
-    .home-icon a { color: #fff; font-size: 28px; text-decoration: none; transition: color 0.3s ease; }
-    .home-icon a:hover { color: #00ffff; transform: scale(1.1); display: inline-block; }
    body {
   margin: 0;
   padding: 20px;
@@ -88,7 +68,7 @@ body::after {
     }
 
     .back-btn:hover {
-      background-color: #00cccc;
+      background-color: #00ffff;
     }
 
     #results {
@@ -168,12 +148,7 @@ body::after {
 </head>
 <body>
 
-<main>
-
   <h1>TV Shows</h1>
-  <div class="home-icon">
-      <a href="index"><i class="fas fa-home"></i></a>
-  </div>
 
   <div id="results"></div>
   <div id="spinner" class="spinner" style="display:none;"></div>
@@ -219,7 +194,6 @@ body::after {
                     ? IMAGE_BASE_URL + movie.poster_path
                     : 'https://i.postimg.cc/d15mp6sz/Image-Not-Available.jpg';
                 img.alt = movie.name;
-                img.loading = 'lazy';
 
                 const title = document.createElement('h3');
                 title.textContent = movie.name;
@@ -234,8 +208,7 @@ body::after {
                 // Set the redirect behavior on click
                 card.onclick = () => {
                     const currentCategory = 'tv';
-                    const seoTitle = encodeURIComponent((movie.name || 'Unknown').toLowerCase().replace(/[^a-z0-9]+/g, '-'));
-                    window.location.href = `movie?title=${seoTitle}&id=${movie.id}&type=${currentCategory}`;
+                    window.location.href = `movie?id=${movie.id}&type=${currentCategory}`;
                 };
 
                 results.appendChild(card);
@@ -271,8 +244,6 @@ body::after {
         // Initial load
         fetchMovies();
     </script>
-
-</main>
 
 
 </body>

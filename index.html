@@ -3,44 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mooov - Your Movie Hub</title>
-    <!-- SEO Tags -->
-    <meta name="description" content="Your ultimate destination for movies and TV shows. Search, discover, and watch your favorite content online.">
-    <meta name="keywords" content="movies, tv shows, watch online, streaming, mooov, free movies, watch tv series">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://mooov.online/">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Mooov - Your Movie Hub">
-    <meta property="og:description" content="Search, discover, and watch your favorite movies and TV shows.">
-    <meta property="og:image" content="https://i.postimg.cc/nLdZJ80H/mooov.png">
-    <meta property="og:url" content="https://mooov.online/">
-    <meta property="og:site_name" content="Mooov">
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="Mooov - Your Movie Hub">
-    <meta property="twitter:description" content="Search, discover, and watch your favorite movies and TV shows.">
-    <meta property="twitter:image" content="https://i.postimg.cc/nLdZJ80H/mooov.png">
-    <!-- JSON-LD Structured Data -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Mooov",
-        "url": "https://mooov.online/",
-        "description": "Your ultimate destination for movies and TV shows.",
-        "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://mooov.online/search?query={search_term_string}",
-            "query-input": "required name=search_term_string"
-        }
-    }
-    </script>
-    <!-- Preconnect hints for faster external resource loading -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://image.tmdb.org">
-    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-    <link rel="dns-prefetch" href="https://i.postimg.cc">
-    <link rel="stylesheet" href="style.css">
+    <title>Mooov - Your Movie Hub </title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="icon" type="image/png" href="https://i.postimg.cc/nLdZJ80H/mooov.png">
@@ -144,39 +108,6 @@
             background: #6b7280;
         }
 
-        /* Scroll wrapper for arrow buttons */
-        .scroll-wrapper {
-            position: relative;
-        }
-        .scroll-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 10;
-            background: rgba(0,0,0,0.7);
-            color: #fff;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 18px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.3s, transform 0.2s;
-        }
-        .scroll-btn:hover {
-            background: rgba(0,255,255,0.6);
-            transform: translateY(-50%) scale(1.1);
-        }
-        .scroll-btn.left { left: -15px; }
-        .scroll-btn.right { right: -15px; }
-        /* Hide scroll arrows on mobile */
-        @media (max-width: 768px) {
-            .scroll-btn { display: none !important; }
-        }
-
         /* Spinner CSS for loading indicators */
         .spinner {
             border: 8px solid #333;
@@ -265,6 +196,9 @@
 
         /* --- Mobile Navigation Styles --- */
         /* Hide/show elements based on device (desktop vs. mobile) */
+        .desktop-only {
+            display: block;
+        }
         .mobile-only {
             display: none;
         }
@@ -516,8 +450,6 @@
 
     <div id="menuOverlay" class="menu-overlay" onclick="toggleMenu()"></div>
 
-    <main>
-
     <section id="hero-slideshow" class="relative w-full h-screen flex items-center justify-center hero-slideshow-bg">
         <div class="hero-overlay absolute inset-0"></div>
         <div class="gradient-overlay"></div>
@@ -540,67 +472,56 @@
 
     <section class="container mx-auto px-4 py-8 -mt-24 relative z-20">
         <h2 class="text-3xl font-bold mb-6 text-white">Trending Movies</h2>
-        <div class="scroll-wrapper">
-            <button class="scroll-btn left" onclick="scrollGrid('trending-movies-grid', -600)"><i class="fas fa-chevron-left"></i></button>
+        <div class="relative">
             <div id="trending-movies-grid" class="grid-container">
-                <div class="spinner"></div>
-            </div>
-            <button class="scroll-btn right" onclick="scrollGrid('trending-movies-grid', 600)"><i class="fas fa-chevron-right"></i></button>
+                <div class="spinner"></div> </div>
         </div>
     </section>
     
+     <section class="container mx-auto px-4 py-8 content-section">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-3xl font-bold mb-6 text-white">New Releases</h2>
+        </div>
+        <div id="new-releases" class="grid-container">
+            <div class="spinner"></div>
+        </div>
+    </section>
+    
+
+
     <section class="container mx-auto px-4 py-8 content-section">
-        <h2 class="text-3xl font-bold mb-6 text-white">New Releases</h2>
-        <div class="scroll-wrapper">
-            <button class="scroll-btn left" onclick="scrollGrid('new-releases', -600)"><i class="fas fa-chevron-left"></i></button>
-            <div id="new-releases" class="grid-container">
-                <div class="spinner"></div>
-            </div>
-            <button class="scroll-btn right" onclick="scrollGrid('new-releases', 600)"><i class="fas fa-chevron-right"></i></button>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-3xl font-bold mb-6 text-white">Popular Movies</h2>
+        </div>
+        <div id="popular-movies" class="grid-container">
+            <div class="spinner"></div>
         </div>
     </section>
 
     <section class="container mx-auto px-4 py-8 content-section">
-        <h2 class="text-3xl font-bold mb-6 text-white">Popular Movies</h2>
-        <div class="scroll-wrapper">
-            <button class="scroll-btn left" onclick="scrollGrid('popular-movies', -600)"><i class="fas fa-chevron-left"></i></button>
-            <div id="popular-movies" class="grid-container">
-                <div class="spinner"></div>
-            </div>
-            <button class="scroll-btn right" onclick="scrollGrid('popular-movies', 600)"><i class="fas fa-chevron-right"></i></button>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-3xl font-bold mb-6 text-white">Top Rated Movies</h2>
+        </div>
+        <div id="top-rated-movies" class="grid-container">
+            <div class="spinner"></div>
         </div>
     </section>
 
     <section class="container mx-auto px-4 py-8 content-section">
-        <h2 class="text-3xl font-bold mb-6 text-white">Top Rated Movies</h2>
-        <div class="scroll-wrapper">
-            <button class="scroll-btn left" onclick="scrollGrid('top-rated-movies', -600)"><i class="fas fa-chevron-left"></i></button>
-            <div id="top-rated-movies" class="grid-container">
-                <div class="spinner"></div>
-            </div>
-            <button class="scroll-btn right" onclick="scrollGrid('top-rated-movies', 600)"><i class="fas fa-chevron-right"></i></button>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-3xl font-bold mb-6 text-white">Popular TV Series</h2>
+        </div>
+        <div id="popular-tv" class="grid-container">
+            <div class="spinner"></div>
         </div>
     </section>
 
     <section class="container mx-auto px-4 py-8 content-section">
-        <h2 class="text-3xl font-bold mb-6 text-white">Popular TV Series</h2>
-        <div class="scroll-wrapper">
-            <button class="scroll-btn left" onclick="scrollGrid('popular-tv', -600)"><i class="fas fa-chevron-left"></i></button>
-            <div id="popular-tv" class="grid-container">
-                <div class="spinner"></div>
-            </div>
-            <button class="scroll-btn right" onclick="scrollGrid('popular-tv', 600)"><i class="fas fa-chevron-right"></i></button>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-3xl font-bold mb-6 text-white">Top Rated TV Series</h2>
         </div>
-    </section>
-
-    <section class="container mx-auto px-4 py-8 content-section">
-        <h2 class="text-3xl font-bold mb-6 text-white">Top Rated TV Series</h2>
-        <div class="scroll-wrapper">
-            <button class="scroll-btn left" onclick="scrollGrid('top-rated-tv', -600)"><i class="fas fa-chevron-left"></i></button>
-            <div id="top-rated-tv" class="grid-container">
-                <div class="spinner"></div>
-            </div>
-            <button class="scroll-btn right" onclick="scrollGrid('top-rated-tv', 600)"><i class="fas fa-chevron-right"></i></button>
+        <div id="top-rated-tv" class="grid-container">
+            <div class="spinner"></div>
         </div>
     </section>
     
@@ -608,14 +529,6 @@
 
 
    <script>
-    // --- Scroll Grid Function for Arrow Buttons ---
-    function scrollGrid(containerId, scrollAmount) {
-        const container = document.getElementById(containerId);
-        if (container) {
-            container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-        }
-    }
-
     // --- TMDB API Configuration ---
     // REMOVED: const TMDB_API_KEY = ''; // Your TMDB API key
     // Use your Cloudflare Worker as the base URL for API calls
@@ -705,8 +618,6 @@
         // Store current slide data for "Watch Now" button to link to details page
         slideshowWatchNowBtn.dataset.itemId = item.id;
         slideshowWatchNowBtn.dataset.itemType = item.media_type === 'tv' || item.first_air_date ? 'tv' : 'movie'; // Determine type for navigation
-        const itemTitle = item.title || item.name || 'Unknown Title';
-        slideshowWatchNowBtn.dataset.seoTitle = encodeURIComponent(itemTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
     }
 
     /**
@@ -740,14 +651,12 @@
         // Determine item type for the detail page link (movie or tv)
         const itemType = item.media_type === 'tv' || item.first_air_date ? 'tv' : 'movie';
         const itemId = item.id;
-        const itemTitle = item.title || item.name || 'Unknown Title';
-        const seoTitle = encodeURIComponent(itemTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
 
         const cardLink = document.createElement('a');
-        cardLink.href = `movie?title=${seoTitle}&id=${itemId}&type=${itemType}`; // Link to a generic movie/TV detail page and removed.html
+        cardLink.href = `movie?id=${itemId}&type=${itemType}`; // Link to a generic movie/TV detail page and removed.html
         cardLink.classList.add('card'); // Apply card styling to the anchor tag
         cardLink.innerHTML = `
-            <img src="${posterPath}" alt="${item.title || item.name || 'Poster'}" loading="lazy" width="300" height="450" onerror="this.onerror=null;this.src='https://placehold.co/300x450/2d3748/e2e8f0?text=No+Poster';" />
+            <img src="${posterPath}" alt="${item.title || item.name || 'Poster'}" onerror="this.onerror=null;this.src='https://placehold.co/300x450/2d3748/e2e8f0?text=No+Poster';" />
             <div class="card-title">${item.title || item.name || 'Unknown Title'}</div>
         `;
         container.appendChild(cardLink);
@@ -784,10 +693,9 @@
     slideshowWatchNowBtn.addEventListener('click', () => {
         const itemId = slideshowWatchNowBtn.dataset.itemId;
         const itemType = slideshowWatchNowBtn.dataset.itemType;
-        const seoTitle = slideshowWatchNowBtn.dataset.seoTitle;
         if (itemId && itemType) {
             // Redirect to a detail page with the item ID and type
-            window.location.href = `movie?title=${seoTitle}&id=${itemId}&type=${itemType}`; //removed .html
+            window.location.href = `movie?id=${itemId}&type=${itemType}`; //removed .html
         } else {
             console.warn("No movie/TV show loaded for 'Watch Now' button.");
         }
@@ -915,13 +823,5 @@
     // Ensure the DOM is fully loaded before running the initialization function
     document.addEventListener('DOMContentLoaded', initializeHomepage);
 </script>
-
-    </main>
-
-    <!-- Footer -->
-    <footer style="background-color: #111; padding: 20px 0; text-align: center; color: #555; font-size: 0.85rem; margin-top: 40px; border-top: 1px solid #222;">
-        <p style="margin: 0;">© 2026 <a href="index" style="color: #00ffff; text-decoration: none;">Mooov</a>. All rights reserved.</p>
-        <p style="margin: 5px 0 0;"><a href="movies" style="color: #888; text-decoration: none; margin: 0 10px;">Movies</a> | <a href="tvshows" style="color: #888; text-decoration: none; margin: 0 10px;">TV Shows</a></p>
-    </footer>
 </body>
 </html>

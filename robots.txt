@@ -1,7 +1,3 @@
 User-agent: *
 Allow: /
-Disallow: https://indx.mooov.online/
-Disallow: https://getdetails.mooov.online/
 
-
-Sitemap: https://mooov.online/sitemap.xml

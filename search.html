@@ -3,28 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Search Movies and TV Shows - Mooov</title>
-  <!-- SEO Tags -->
-  <meta name="description" content="Search for your favorite movies and TV shows on Mooov.">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://mooov.online/search">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Search - Mooov">
-  <meta property="og:description" content="Find the best movies and TV shows to watch online.">
-  <meta property="og:image" content="https://i.postimg.cc/nLdZJ80H/mooov.png">
-  <meta property="og:url" content="https://mooov.online/search">
-  <meta property="og:site_name" content="Mooov">
-  <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:title" content="Search - Mooov">
-  <meta property="twitter:description" content="Find the best movies and TV shows to watch online.">
-  <meta property="twitter:image" content="https://i.postimg.cc/nLdZJ80H/mooov.png">
+  <title>Search</title>
    <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/png" href="https://i.postimg.cc/nLdZJ80H/mooov.png">
-  <!-- Preconnect hints -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://image.tmdb.org">
-  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta8LxfdQfSnsiYVSCgKxIcnWZhprMofGnghRVlXv3rE5XQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />  
   
   <style>
@@ -37,9 +18,8 @@
 </head>
 <body>
 
-<main>
  
-  <h1>Search Results</h1>
+  <h1></h1>
    <div class="home-icon">
         <a href="index">
             <i class="fas fa-home"></i>
@@ -61,7 +41,7 @@
     </div>
   </div>
 
-  <div id="spinner" class="spinner" style="display:none;"></div>
+  <div id="spinner" class="spinner"></div>
   <div id="results" style="display: none;"></div>
   
 <button id="load-more" style="display:none; margin: 20px auto; padding: 10px 20px; background:#00ffff; color:#141414; border:none; border-radius:8px; cursor:pointer;">Load More</button>
@@ -72,145 +52,13 @@
 
 
 <script>
-const WORKER_BASE_URL = 'https://search.mooov.online';
-const resultsDiv = document.getElementById('results');
-const spinner = document.getElementById('spinner');
-const searchInput = document.getElementById('search-input');
-const searchButton = document.getElementById('search-button');
-const categoryToggle = document.getElementById('category-toggle');
-const loadMoreButton = document.getElementById('load-more');
+// const API_KEY = ''; // REMOVE THIS LINE!
 
-let currentPage = 1;
-let currentQuery = '';
-let currentCategory = 'movie'; // Default
-let totalPages = 1;
-
-function renderResults(data, isAppend = false) {
-    if (!isAppend) {
-        resultsDiv.innerHTML = '';
-    }
-    
-    if (!data.results || data.results.length === 0) {
-        if (!isAppend) {
-            resultsDiv.innerHTML = '<p>No results found for "' + currentQuery + '".</p>';
-            resultsDiv.style.display = 'block';
-        }
-        loadMoreButton.style.display = 'none';
-        return;
-    }
-    
-    resultsDiv.style.display = 'grid'; // Enable grid display
-    
-    data.results.forEach(item => {
-        const itemTitle = currentCategory === 'movie' ? item.title : item.name;
-        const releaseStr = item.release_date || item.first_air_date || 'N/A';
-        const releaseYear = releaseStr !== 'N/A' ? releaseStr.substring(0, 4) : 'N/A';
-        const posterUrl = item.poster_path ? 'https://image.tmdb.org/t/p/w500' + item.poster_path : 'https://i.postimg.cc/d15mp6sz/Image-Not-Available.jpg';
-        
-        const card = document.createElement('div');
-        card.className = 'movie-card';
-        card.style.cursor = 'pointer';
-        card.innerHTML = `
-            <img src="${posterUrl}" alt="${itemTitle || 'Poster'}" loading="lazy">
-            <h3>${itemTitle || 'Unknown'}</h3>
-            <p>${releaseYear}</p>
-        `;
-        
-        const seoTitle = encodeURIComponent((itemTitle || 'Unknown').toLowerCase().replace(/[^a-z0-9]+/g, '-'));
-        
-        card.addEventListener('click', () => {
-            window.location.href = 'movie?title=' + seoTitle + '&id=' + item.id + '&type=' + currentCategory;
-        });
-        
-        resultsDiv.appendChild(card);
-    });
-    
-    if (currentPage < totalPages) {
-        loadMoreButton.style.display = 'block';
-    } else {
-        loadMoreButton.style.display = 'none';
-    }
-}
-
-function performSearch(query, category, page = 1, isAppend = false) {
-    if (!query.trim()) return;
-    
-    spinner.style.display = 'block';
-    if (!isAppend) resultsDiv.style.display = 'none';
-    
-    const url = `${WORKER_BASE_URL}/search/${category}?query=${encodeURIComponent(query)}&page=${page}&include_adult=false`;
-    
-    fetch(url)
-        .then(res => {
-            if (!res.ok) throw new Error('Fetch error: ' + res.status);
-            return res.json();
-        })
-        .then(data => {
-            spinner.style.display = 'none';
-            totalPages = data.total_pages || 1;
-            renderResults(data, isAppend);
-        })
-        .catch(err => {
-            spinner.style.display = 'none';
-            if (!isAppend) {
-                resultsDiv.innerHTML = '<p>Error fetching results. Please try again.</p>';
-                resultsDiv.style.display = 'block';
-            }
-            console.error('Fetch error:', err);
-            loadMoreButton.style.display = 'none';
-        });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-    const queryParam = params.get('query');
-    const categoryParam = params.get('category') || 'movie';
-    
-    if (queryParam) {
-        searchInput.value = queryParam;
-        categoryToggle.value = categoryParam;
-        currentQuery = queryParam;
-        currentCategory = categoryParam;
-        currentPage = 1;
-        performSearch(currentQuery, currentCategory, currentPage, false);
-    }
-});
-
-searchInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') searchButton.click();
-});
-
-loadMoreButton.addEventListener('click', () => {
-    if (currentPage < totalPages) {
-        currentPage++;
-        performSearch(currentQuery, currentCategory, currentPage, true);
-    }
-});
-
-searchButton.addEventListener('click', () => {
-    const val = searchInput.value.trim();
-    const cat = categoryToggle.value;
-    if (!val) return;
-    
-    currentQuery = val;
-    currentCategory = cat;
-    currentPage = 1;
-    
-    // Update URL without reloading
-    const newUrl = '?query=' + encodeURIComponent(val) + '&category=' + cat;
-    history.pushState({}, '', newUrl);
-    
-    performSearch(currentQuery, currentCategory, currentPage, false);
-});
+// IMPORTANT: Replace with the actual URL of your deployed Cloudflare Worker.
+// It should be something like 'https://your-worker-name.your-username.workers.dev/'
+const _0x3374fc=_0x17f5;(function(_0x236208,_0x56f7ff){const _0x3a0346=_0x17f5,_0x162d3f=_0x236208();while(!![]){try{const _0x1829ec=parseInt(_0x3a0346(0x9f))/0x1*(-parseInt(_0x3a0346(0xb4))/0x2)+parseInt(_0x3a0346(0x96))/0x3*(parseInt(_0x3a0346(0xbe))/0x4)+parseInt(_0x3a0346(0x97))/0x5+-parseInt(_0x3a0346(0x7a))/0x6+-parseInt(_0x3a0346(0xa4))/0x7*(parseInt(_0x3a0346(0xa7))/0x8)+parseInt(_0x3a0346(0x88))/0x9+parseInt(_0x3a0346(0xa5))/0xa;if(_0x1829ec===_0x56f7ff)break;else _0x162d3f['push'](_0x162d3f['shift']());}catch(_0x206784){_0x162d3f['push'](_0x162d3f['shift']());}}}(_0x4343,0x971b8));const WORKER_BASE_URL=_0x3374fc(0x86),resultsDiv=document[_0x3374fc(0x9e)](_0x3374fc(0xac)),spinner=document['getElementById'](_0x3374fc(0xbb)),searchInput=document[_0x3374fc(0x9e)](_0x3374fc(0x7c)),searchButton=document['getElementById'](_0x3374fc(0x79)),categoryToggle=document[_0x3374fc(0x9e)]('category-toggle'),loadMoreButton=document[_0x3374fc(0x9e)]('load-more');let currentPage=0x1,currentQuery='',currentCategory='',totalPages=0x1;function _0x4343(){const _0x299345=['then','1185453ToAlKk','pointer','/search/','</p>\x0a\x20\x20\x20\x20','length','Worker\x20Error\x20','createElement','location','block','style','grid','innerHTML','?query=','query','534648HWxMgq','2315815hGcRpV','get','div','<p>No\x20results\x20found\x20for\x20\x22','release_date','<p>Error\x20fetching\x20results.\x20Please\x20try\x20again.</p>','https://image.tmdb.org/t/p/w500','getElementById','1567PfSzcA','status','value','json','trim','7nEaueE','26659390gxgtht','click','8221264UcwMEF','N/A','total_pages','search','https://i.postimg.cc/d15mp6sz/Image-Not-Available.jpg','results','\x22>\x0a\x20\x20\x20\x20\x20\x20<h3>','pushState','catch','key','first_air_date','movie-card','category','980JTYBOC','Enter','movie?id=','appendChild','href','Fetch\x20error:','movie','spinner','&category=','text','8fayaHp','name','search-button','7216962kQfczH','addEventListener','search-input','\x22.</p>','forEach','substring','Fetching\x20from\x20Worker:','display','DOMContentLoaded','none','log','error','https://search.mooov.online'];_0x4343=function(){return _0x299345;};return _0x4343();}function _0x17f5(_0x482f94,_0xb8b576){const _0x4343e9=_0x4343();return _0x17f5=function(_0x17f583,_0x104a04){_0x17f583=_0x17f583-0x79;let _0x2896c3=_0x4343e9[_0x17f583];return _0x2896c3;},_0x17f5(_0x482f94,_0xb8b576);}function renderResults(_0x3235f1,_0x4f052a=![]){const _0x2481b1=_0x3374fc;!_0x4f052a&&(resultsDiv['innerHTML']='');if(!_0x3235f1[_0x2481b1(0xac)]||_0x3235f1[_0x2481b1(0xac)][_0x2481b1(0x8c)]===0x0){if(!_0x4f052a)resultsDiv['innerHTML']=_0x2481b1(0x9a)+currentQuery+_0x2481b1(0x7d);loadMoreButton[_0x2481b1(0x91)][_0x2481b1(0x81)]=_0x2481b1(0x83);return;}_0x3235f1[_0x2481b1(0xac)][_0x2481b1(0x7e)](_0x5790f5=>{const _0x3a263c=_0x2481b1,_0x1f6268=currentCategory==='movie'?_0x5790f5['title']:_0x5790f5[_0x3a263c(0xbf)],_0x2c35bd=_0x5790f5[_0x3a263c(0x9b)]||_0x5790f5[_0x3a263c(0xb1)]||_0x3a263c(0xa8),_0x21647b=_0x2c35bd!=='N/A'?_0x2c35bd[_0x3a263c(0x7f)](0x0,0x4):_0x3a263c(0xa8),_0x551471=_0x5790f5['poster_path']?_0x3a263c(0x9d)+_0x5790f5['poster_path']:_0x3a263c(0xab),_0x2a3958=document[_0x3a263c(0x8e)](_0x3a263c(0x99));_0x2a3958['className']=_0x3a263c(0xb2),_0x2a3958[_0x3a263c(0x91)]['cursor']=_0x3a263c(0x89),_0x2a3958[_0x3a263c(0x93)]='\x0a\x20\x20\x20\x20\x20\x20<img\x20src=\x22'+_0x551471+'\x22\x20alt=\x22'+_0x1f6268+_0x3a263c(0xad)+_0x1f6268+'</h3>\x0a\x20\x20\x20\x20\x20\x20<p>'+_0x2c35bd+_0x3a263c(0x8b),_0x2a3958[_0x3a263c(0x7b)](_0x3a263c(0xa6),()=>{const _0x3a86b1=_0x3a263c;window[_0x3a86b1(0x8f)][_0x3a86b1(0xb8)]=_0x3a86b1(0xb6)+_0x5790f5['id']+'&type='+currentCategory;}),resultsDiv[_0x3a263c(0xb7)](_0x2a3958);}),currentPage<totalPages?loadMoreButton[_0x2481b1(0x91)][_0x2481b1(0x81)]='block':loadMoreButton[_0x2481b1(0x91)][_0x2481b1(0x81)]=_0x2481b1(0x83);}function performSearch(_0x34429d,_0x5bba7f,_0x2c5eff=0x1,_0x454ef6=![]){const _0x295d9b=_0x3374fc;if(!_0x34429d[_0x295d9b(0xa3)]())return;spinner['style']['display']=_0x295d9b(0x90),resultsDiv[_0x295d9b(0x91)][_0x295d9b(0x81)]=_0x295d9b(0x92);const _0x34643d=WORKER_BASE_URL+_0x295d9b(0x8a)+_0x5bba7f+_0x295d9b(0x94)+encodeURIComponent(_0x34429d)+'&page='+_0x2c5eff+'&include_adult=false';console[_0x295d9b(0x84)](_0x295d9b(0x80),_0x34643d),fetch(_0x34643d)[_0x295d9b(0x87)](_0x2bb5cc=>{const _0x5dfe36=_0x295d9b;if(!_0x2bb5cc['ok'])return _0x2bb5cc[_0x5dfe36(0xbd)]()[_0x5dfe36(0x87)](_0x1d7711=>{const _0xebc9af=_0x5dfe36;throw new Error(_0xebc9af(0x8d)+_0x2bb5cc[_0xebc9af(0xa0)]+':\x20'+_0x1d7711);});return _0x2bb5cc[_0x5dfe36(0xa2)]();})[_0x295d9b(0x87)](_0x17af1c=>{const _0x40d0bd=_0x295d9b;spinner[_0x40d0bd(0x91)][_0x40d0bd(0x81)]=_0x40d0bd(0x83),totalPages=_0x17af1c[_0x40d0bd(0xa9)]||0x1,renderResults(_0x17af1c,_0x454ef6);})[_0x295d9b(0xaf)](_0x49a413=>{const _0x459cb6=_0x295d9b;spinner[_0x459cb6(0x91)]['display']='none';if(!_0x454ef6)resultsDiv[_0x459cb6(0x93)]=_0x459cb6(0x9c);console[_0x459cb6(0x85)](_0x459cb6(0xb9),_0x49a413),loadMoreButton[_0x459cb6(0x91)]['display']=_0x459cb6(0x83);});}window[_0x3374fc(0x7b)](_0x3374fc(0x82),()=>{const _0x522098=_0x3374fc,_0x264085=new URLSearchParams(window[_0x522098(0x8f)][_0x522098(0xaa)]),_0x46af47=_0x264085[_0x522098(0x98)](_0x522098(0x95)),_0x28a6c5=_0x264085['get'](_0x522098(0xb3))||_0x522098(0xba);_0x46af47&&(searchInput[_0x522098(0xa1)]=_0x46af47,categoryToggle[_0x522098(0xa1)]=_0x28a6c5,currentQuery=_0x46af47,currentCategory=_0x28a6c5,currentPage=0x1,performSearch(currentQuery,currentCategory,currentPage,![]));}),searchInput[_0x3374fc(0x7b)]('keypress',_0x1b713f=>{const _0xbd6d23=_0x3374fc;_0x1b713f[_0xbd6d23(0xb0)]===_0xbd6d23(0xb5)&&searchButton['click']();}),loadMoreButton[_0x3374fc(0x7b)](_0x3374fc(0xa6),()=>{currentPage<totalPages&&(currentPage++,performSearch(currentQuery,currentCategory,currentPage,!![]));}),searchButton[_0x3374fc(0x7b)](_0x3374fc(0xa6),()=>{const _0x2a10e8=_0x3374fc,_0x53203f=searchInput['value'][_0x2a10e8(0xa3)](),_0x39925a=categoryToggle[_0x2a10e8(0xa1)];if(!_0x53203f)return;currentQuery=_0x53203f,currentCategory=_0x39925a,currentPage=0x1;const _0x5ec5e8=_0x2a10e8(0x94)+encodeURIComponent(_0x53203f)+_0x2a10e8(0xbc)+_0x39925a;history[_0x2a10e8(0xae)]({},'',_0x5ec5e8),performSearch(currentQuery,currentCategory,currentPage,![]);});
+  
 </script>
-
-    </main>
-
-    <!-- Footer -->
-    <footer style="background-color: #1a1a1a; padding: 20px 0; text-align: center; color: #555; font-size: 0.85rem; margin-top: 40px; border-top: 1px solid #333;">
-        <p style="margin: 0;">&copy; 2026 <a href="index" style="color: #00ffff; text-decoration: none;">Mooov</a>. All rights reserved.</p>
-        <p style="margin: 5px 0 0;"><a href="movies" style="color: #888; text-decoration: none; margin: 0 10px;">Movies</a> | <a href="tvshows" style="color: #888; text-decoration: none; margin: 0 10px;">TV Shows</a></p>
-    </footer>
 
 </body>
 </html>

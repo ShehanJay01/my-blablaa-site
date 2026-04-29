@@ -4,39 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Watch Now</title>
-    <!-- Default SEO Tags (will be updated dynamically) -->
-    <meta name="description" content="Watch your favorite movies and TV shows.">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://mooov.online/movie">
-    <meta property="og:type" content="video.movie">
-    <meta property="og:title" content="Watch Now - Mooov">
-    <meta property="og:description" content="Watch your favorite movies and TV shows online.">
-    <meta property="og:image" content="https://i.postimg.cc/nLdZJ80H/mooov.png">
-    <meta property="og:url" content="https://mooov.online/movie">
-    <meta property="og:site_name" content="Mooov">
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="Watch Now - Mooov">
-    <meta property="twitter:description" content="Watch your favorite movies and TV shows online.">
-    <meta property="twitter:image" content="https://i.postimg.cc/nLdZJ80H/mooov.png">
-    <!-- JSON-LD Structured Data (updated dynamically by JS) -->
-    <script type="application/ld+json" id="movie-jsonld">{}</script>
-    <!-- Breadcrumb Schema -->
-    <script type="application/ld+json" id="breadcrumb-jsonld">
-    {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://mooov.online/" },
-            { "@type": "ListItem", "position": 2, "name": "Watch", "item": "https://mooov.online/movie" }
-        ]
-    }
-    </script>
-    <!-- Preconnect hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://image.tmdb.org">
-    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-    <link rel="dns-prefetch" href="https://i.postimg.cc">
     <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta8LxfdQfSnsiYVSCgKxIcnWZhprMofGnghRVlXv3rE5XQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="icon" type="image/png" href="https://i.postimg.cc/nLdZJ80H/mooov.png">
@@ -268,9 +235,10 @@
         /* Movie title styling */
         .movie-info h1 {
             margin-top: 0;
+            font-size: 3rem;
             font-weight: bold;
             margin: 0 0 0.5rem 0;
-            font-size: 2.5rem;
+            font-size: 2.5rem; /* Adjusted for better fit */
         }
 
         /* Hide/show elements based on device (desktop vs. mobile) */
@@ -592,56 +560,6 @@
             border-radius: 12px;
         }
 
-        /* Server selector buttons */
-        .server-selector {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 2rem;
-            margin-bottom: 10px;
-            align-items: center;
-        }
-
-        .server-selector .label {
-            font-size: 0.9rem;
-            color: #aaa;
-            margin-right: 5px;
-            font-weight: 600;
-        }
-
-        .server-btn {
-            padding: 8px 18px;
-            border: 2px solid #333;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            color: #ccc;
-            font-size: 0.85rem;
-            font-family: Nunito, sans-serif;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
-
-        .server-btn:hover {
-            border-color: #00ffff;
-            color: white;
-            background: rgba(0, 255, 255, 0.08);
-        }
-
-        .server-btn.active {
-            border-color: #00ffff;
-            background: rgba(0, 255, 255, 0.2);
-            color: #00ffff;
-            box-shadow: 0 0 12px rgba(0, 255, 255, 0.2);
-        }
-
-        @media (max-width: 600px) {
-            .server-btn {
-                padding: 6px 14px;
-                font-size: 0.78rem;
-            }
-        }
-
         /* Seasons horizontal scroll container */
         #seasons {
             margin-top: 2rem;
@@ -745,72 +663,6 @@
             
             
         }
-        /* Download section styling */
-        .download-section {
-            margin-top: 2rem;
-            padding: 1.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            border: 1px solid rgba(0, 255, 255, 0.1);
-        }
-
-        .download-section h2 {
-            font-size: 1.2rem;
-            margin-top: 0;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #00ffff;
-        }
-
-        .download-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .download-btn {
-            flex: 1;
-            min-width: 200px;
-            padding: 12px 20px;
-            background: linear-gradient(135deg, #00ffff 0%, #008b8b 100%);
-            color: black;
-            text-decoration: none;
-            border-radius: 10px;
-            font-weight: 700;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
-        }
-
-        .download-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.4);
-            filter: brightness(1.1);
-        }
-
-        .download-btn i {
-            font-size: 1.2rem;
-        }
-
-        .download-btn span {
-            font-size: 0.85rem;
-            opacity: 0.8;
-            font-weight: 400;
-            display: block;
-        }
-
-        @media (max-width: 600px) {
-            .download-btn {
-                min-width: 100%;
-                padding: 10px;
-            }
-        }
     </style>
 
 </head>
@@ -843,20 +695,18 @@
 
         <div class="menu-header">Browse</div>
         <div class="browse-buttons">
-            <button class="browse-button active" data-category="movie">Movies</button>
-            <button class="browse-button" data-category="tv">TV Shows</button>
+            <button class="browse-button active" data-category="movie"></i> Movies</button>
+            <button class="browse-button" data-category="tv"></i> TV Shows</button>
         </div>
 
         <div class="search-section-menu">
             <input type="search" id="menu-search-input" placeholder="Browse Movies" />
-            <button id="menu-search-button"><i class="fas fa-search"></i></button>
+            <button id="menu-search-button"><i class="aresp search-resp"></i></button>
         </div>
         <div class="menu-watermark">S H E H A N J</div>
     </nav>
 
     <div id="menuOverlay" class="menu-overlay" onclick="toggleMenu()"></div>
-
-    <main>
 
     <div id="splash">
         <div>🎬 Loading...</div>
@@ -878,7 +728,7 @@
                 </div>
             </div>
             <div class="poster">
-                <img id="poster" src="" alt="Movie Poster" loading="lazy" />
+                <img id="poster" src="" alt="Poster" />
             </div>
         </div>
 
@@ -886,17 +736,7 @@
         <div id="episodes" style="display:none;"></div>
 
         <div id="player"></div>
-        <div id="download-links" style="display:none;" class="download-section">
-            <h2><i class="fas fa-download"></i> Download Options</h2>
-            <div class="download-grid" id="download-buttons"></div>
-            <p style="font-size: 0.8rem; color: #888; margin-top: 15px; text-align: center;">
-                <i class="fas fa-info-circle"></i> Note: These links will open external sites where you can choose your preferred quality.
-            </p>
-        </div>
     </div>
-
-    </main>
-
 
     <script>
         /**
@@ -908,61 +748,6 @@
             const txt = document.createElement("textarea");
             txt.innerHTML = html;
             return txt.value;
-        }
-
-        /**
-         * Updates SEO Meta Tags Dynamically.
-         * @param {string} title - The base title of the media.
-         * @param {string} overview - The description/overview.
-         * @param {string} poster - The poster image URL.
-         * @param {string} id - The media ID.
-         * @param {string} type - The media type ("movie" or "tv").
-         * @param {number|null} season - The season number.
-         * @param {number|null} episode - The episode number.
-         */
-        function updateSEO(title, overview, poster, id, type, season = null, episode = null) {
-            const siteName = "Mooov";
-            let displayTitle = title;
-            if (type === 'tv' && season && episode) {
-                displayTitle = `${title} - Season ${season} Episode ${episode}`;
-            }
-            
-            const fullPageTitle = `${displayTitle} - ${siteName}`;
-            document.title = fullPageTitle;
-            
-            // Limit description to ~160 characters for SEO
-            const metaDescription = overview.length > 160 ? overview.substring(0, 157) + "..." : overview;
-            
-            const updateMeta = (selector, attr, value) => {
-                const el = document.querySelector(selector);
-                if (el) el.setAttribute(attr, value);
-            };
-
-            updateMeta('meta[name="description"]', 'content', metaDescription);
-            updateMeta('meta[property="og:title"]', 'content', fullPageTitle);
-            updateMeta('meta[property="og:description"]', 'content', metaDescription);
-            updateMeta('meta[property="twitter:title"]', 'content', fullPageTitle);
-            updateMeta('meta[property="twitter:description"]', 'content', metaDescription);
-            
-            if (poster) {
-                updateMeta('meta[property="og:image"]', 'content', poster);
-                updateMeta('meta[property="twitter:image"]', 'content', poster);
-            }
-
-            const seoSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-            let canonicalUrl = `https://mooov.online/movie?title=${seoSlug}&id=${id}&type=${type}`;
-            if (type === 'tv' && season && episode) {
-                canonicalUrl += `&s=${season}&e=${episode}`;
-            }
-            
-            updateMeta('link[rel="canonical"]', 'href', canonicalUrl);
-            updateMeta('meta[property="og:url"]', 'content', canonicalUrl);
-            
-            // Update URL in browser bar without reloading for sharing and SEO
-            if (window.history.replaceState) {
-                const newUrl = `?title=${seoSlug}&id=${id}&type=${type}${season ? `&s=${season}` : ''}${episode ? `&e=${episode}` : ''}`;
-                window.history.replaceState({id, type, season, episode}, fullPageTitle, newUrl);
-            }
         }
 
         // Get ID and type from URL parameters
@@ -991,36 +776,9 @@
                     fullTitle += ` (${year})`;
                 }
                 document.getElementById("title").textContent = fullTitle;
-                
-                // Update SEO Meta Tags Dynamically
-                const overviewText = decodeHTML(data.overview || "Watch this amazing title online.");
-                const baseTitle = decodeHTML(data.title || data.name || "Untitled");
-                const seoSlug = baseTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-                updateSEO(baseTitle, overviewText, data.poster, id, type);
-
-                // Update JSON-LD Structured Data for rich results
-                const jsonLd = {
-                    "@context": "https://schema.org",
-                    "@type": type === 'movie' ? 'Movie' : 'TVSeries',
-                    "name": fullTitle,
-                    "description": overviewText,
-                    "image": data.poster || '',
-                    "url": `https://mooov.online/movie?title=${seoSlug}&id=${id}&type=${type}`,
-                    "genre": Array.isArray(data.genres) ? data.genres : [],
-                    "datePublished": data.releaseYear || '',
-                    "aggregateRating": data.vote_average ? {
-                        "@type": "AggregateRating",
-                        "ratingValue": data.vote_average,
-                        "bestRating": 10,
-                        "ratingCount": data.vote_count || 1
-                    } : undefined
-                };
-                // Remove undefined fields
-                Object.keys(jsonLd).forEach(key => jsonLd[key] === undefined && delete jsonLd[key]);
-                document.getElementById('movie-jsonld').textContent = JSON.stringify(jsonLd);
 
                 // Set overview
-                document.getElementById("overview").textContent = overviewText;
+                document.getElementById("overview").textContent = decodeHTML(data.overview || "");
 
                 // Set runtime (if available)
                 document.getElementById("runtime").textContent = data.runtime ? `Runtime: ${data.runtime}` : "";
@@ -1072,10 +830,8 @@
                         document.getElementById("episodes").style.display = "none";
                     } else {
                         renderSeasons(seasonsData);
-                        // Support for specific season/episode from URL
-                        const initialS = parseInt(params.get("s")) || seasonsData[0].sn_num;
-                        const initialE = parseInt(params.get("e"));
-                        selectSeason(initialS, initialE);
+                        // Automatically select the first season and its first episode
+                        selectSeason(seasonsData[0].sn_num);
                     }
                 } else if (type === "movie") {
                     // For movies, hide season/episode selectors and directly embed the player
@@ -1126,14 +882,10 @@
         /**
          * Selects a season and renders its episodes.
          * @param {number} seasonNumber - The number of the season to select.
-         * @param {number|null} episodeNumber - Optional episode number to select.
          */
-        function selectSeason(seasonNumber, episodeNumber = null) {
+        function selectSeason(seasonNumber) {
             currentSeason = seasonsData.find(s => s.sn_num === seasonNumber);
-            if (!currentSeason) {
-                currentSeason = seasonsData[0];
-                seasonNumber = currentSeason.sn_num;
-            }
+            if (!currentSeason) return;
 
             // Remove 'active' class from all season buttons
             document.querySelectorAll(".season-button").forEach(btn => btn.classList.remove("active"));
@@ -1144,8 +896,7 @@
             renderEpisodes(currentSeason.episodes || []);
             // Auto select the first episode in the season if available
             if (currentSeason.episodes && currentSeason.episodes.length > 0) {
-                const epToSelect = episodeNumber || currentSeason.episodes[0].ep_number;
-                selectEpisode(epToSelect);
+                selectEpisode(currentSeason.episodes[0].ep_number);
             } else {
                 // If no episodes in the selected season, clear the player
                 renderPlayer(null, null, null);
@@ -1177,22 +928,13 @@
         function selectEpisode(episodeNumber) {
             if (!currentSeason) return; // Ensure a season is selected
             currentEpisode = currentSeason.episodes.find(ep => ep.ep_number === episodeNumber);
-            if (!currentEpisode) {
-                currentEpisode = currentSeason.episodes[0];
-                episodeNumber = currentEpisode.ep_number;
-            }
+            if (!currentEpisode) return;
 
             // Remove 'active' class from all episode buttons
             document.querySelectorAll(".episode-button").forEach(btn => btn.classList.remove("active"));
             // Add 'active' class to the selected episode button
             const activeBtn = document.getElementById(`episode-btn-${episodeNumber}`);
             if (activeBtn) activeBtn.classList.add("active");
-
-            // Update SEO and URL for this specific episode
-            const baseTitle = decodeHTML(document.getElementById("title").textContent.split(' (')[0]);
-            const overview = document.getElementById("overview").textContent;
-            const poster = document.getElementById("poster").src;
-            updateSEO(baseTitle, overview, poster, id, type, currentSeason.sn_num, episodeNumber);
 
             renderPlayer(id, currentSeason.sn_num, episodeNumber);
         }
@@ -1203,235 +945,30 @@
          * @param {number|null} season - The season number (null for movies).
          * @param {number|null} episode - The episode number (null for movies).
          */
-       // Available streaming servers
-        const servers = [
-            { name: 'Server 1', movieUrl: (id) => `https://player.videasy.net/movie/${id}`, tvUrl: (id, s, e) => `https://player.videasy.net/tv/${id}/${s}/${e}` },
-            { name: 'Server 2', movieUrl: (id) => `https://vidsrc.icu/embed/movie/${id}`, tvUrl: (id, s, e) => `https://vidsrc.icu/embed/tv/${id}/${s}/${e}` },
-            { name: 'Server 3', movieUrl: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`, tvUrl: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` },
-            { name: 'Server 4', movieUrl: (id) => `https://vidlink.pro/movie/${id}`, tvUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}` },
-        ];
-        let currentServer = 0;
-        let lastMediaId = null, lastSeason = null, lastEpisode = null;
-
-        function renderPlayer(mediaId, season, episode) {
-            lastMediaId = mediaId; lastSeason = season; lastEpisode = episode;
-            const playerContainer = document.getElementById("player");
-
-            if (!mediaId && !season && !episode) {
-                playerContainer.innerHTML = "<p style='text-align: center; margin-top: 3rem;'>No player available for this selection.</p>";
-                document.getElementById("download-links").style.display = "none";
-                return;
-            }
-
-            // Build server selector buttons
-            let serverBtns = '<div class="server-selector"><span class="label"><i class="fas fa-server"></i> Server:</span>';
-            servers.forEach((srv, i) => {
-                serverBtns += `<button class="server-btn ${i === currentServer ? 'active' : ''}" onclick="switchServer(${i})">${srv.name}</button>`;
-            });
-            serverBtns += '</div>';
-
-            // Get the URL from current server
-            const srv = servers[currentServer];
-            let src;
-            if (type === "movie") {
-                src = srv.movieUrl(mediaId);
-            } else if (type === "tv" && season && episode) {
-                src = srv.tvUrl(mediaId, season, episode);
-            } else {
-                playerContainer.innerHTML = "<p style='text-align: center; margin-top: 3rem;'>No player available for this selection.</p>";
-                document.getElementById("download-links").style.display = "none";
-                return;
-            }
-
-            playerContainer.innerHTML = `
-                ${serverBtns}
-                <iframe
-                    src="${src}"
-                    allowfullscreen
-                    allow="autoplay; encrypted-media; picture-in-picture"
-                    loading="lazy"
-                    referrerpolicy="no-referrer"
-                    style="width:100%; height:500px; border:none; border-radius:12px;"
-                ></iframe>
-            `;
-
-            // Render download links
-            renderDownloadLinks(mediaId, season, episode);
-        }
-
-        function switchServer(index) {
-            currentServer = index;
-            renderPlayer(lastMediaId, lastSeason, lastEpisode);
-        }
-
-        function renderDownloadLinks(mediaId, season, episode) {
-            const downloadSection = document.getElementById("download-links");
-            const downloadButtons = document.getElementById("download-buttons");
-            
-            if (!mediaId) {
-                downloadSection.style.display = "none";
-                return;
-            }
-
-            downloadSection.style.display = "block";
-            
-            const dlServers = [
-                {
-                    name: "Download Server 1",
-                    quality: "Multi-Quality (Fast)",
-                    url: type === "movie" 
-                        ? `https://vidlink.pro/download/movie/${mediaId}` 
-                        : `https://vidlink.pro/download/tv/${mediaId}/${season}/${episode}`
-                },
-                {
-                    name: "Download Server 2",
-                    quality: "High Definition (1080p)",
-                    url: type === "movie"
-                        ? `https://vidsrc.me/download/movie/${mediaId}`
-                        : `https://vidsrc.me/download/tv/${mediaId}/${season}/${episode}`
-                },
-                {
-                    name: "Download Server 3",
-                    quality: "Standard Mirror",
-                    url: type === "movie"
-                        ? `https://vidsrc.xyz/embed/movie/${mediaId}`
-                        : `https://vidsrc.xyz/embed/tv/${mediaId}/${season}/${episode}`
-                }
-            ];
-
-            downloadButtons.innerHTML = dlServers.map(srv => `
-                <a href="${srv.url}" target="_blank" class="download-btn">
-                    <div>
-                        <i class="fas fa-cloud-download-alt"></i>
-                        ${srv.name}
-                        <span>${srv.quality}</span>
-                    </div>
-                </a>
-            `).join('');
-        }
-
-// --- Ad Blocker: Remove rogue iframes & popups injected by the player ---
-(function blockAds() {
-    // Block window.open popups
-    const originalOpen = window.open;
-    window.open = function() {
-        console.log('[AdBlock] Popup blocked');
-        return null;
-    };
-
-    // List of known ad/tracker domains to block
-    const adDomains = [
-        'doubleclick.net', 'googlesyndication.com', 'adservice.google',
-        'ads.', 'adserver.', 'tracker.', 'popads.', 'popcash.',
-        'propellerads.', 'adsterra.', 'exoclick.', 'juicyads.',
-        'trafficjunky.', 'clickadu.', 'hilltopads.', 'a-ads.',
-        'ad.admitad.', 'adnxs.com', 'bidswitch.net', 'serving-sys.com',
-        'revenuehits.', 'adcash.', 'adf.ly', 'sh.st',
-        'linkbucks.', 'shorte.st', 'bongacams.', 'chaturbate.',
-        'livejas', 'streamate', 'cams.com'
-    ];
-
-    function isAdUrl(src) {
-        if (!src) return false;
-        const lower = src.toLowerCase();
-        return adDomains.some(domain => lower.includes(domain));
+       function renderPlayer(mediaId, season, episode) {
+    const playerContainer = document.getElementById("player");
+    let src;
+    if (type === "movie") {
+        src = `https://player.videasy.net/movie/${mediaId}`;
+    } else if (type === "tv" && season && episode) {
+        src = `https://player.videasy.net/tv/${mediaId}/${season}/${episode}`;
+    } else {
+        playerContainer.innerHTML = "<p style='text-align: center; margin-top: 3rem;'>No player available for this selection.</p>";
+        return;
     }
 
-    function isPlayerIframe(iframe) {
-        const playerContainer = document.getElementById('player');
-        return playerContainer && playerContainer.contains(iframe);
-    }
-
-    // Remove any iframe that's not our player
-    function cleanupIframes() {
-        document.querySelectorAll('iframe').forEach(iframe => {
-            // Skip our player iframe
-            if (isPlayerIframe(iframe)) return;
-
-            // Remove iframes injected outside the player
-            const src = iframe.src || iframe.getAttribute('src') || '';
-            // If it has no src, or has an ad domain, or is outside #player — remove it
-            if (!src || isAdUrl(src) || !isPlayerIframe(iframe)) {
-                console.log('[AdBlock] Removed rogue iframe:', src || '(no src)');
-                iframe.remove();
-            }
-        });
-    }
-
-    // Remove suspicious overlay elements (ads often create fixed/absolute positioned divs)
-    function cleanupOverlays() {
-        document.querySelectorAll('div, a').forEach(el => {
-            // Skip elements inside our known containers
-            if (el.closest('#player') || el.closest('.container') || el.closest('.side-menu') || 
-                el.closest('#splash') || el.closest('#menuOverlay') || el.closest('footer') ||
-                el.closest('.search-box') || el.closest('nav') || el.closest('main')) return;
-
-            const style = window.getComputedStyle(el);
-            const isFixed = style.position === 'fixed';
-            const isAbsolute = style.position === 'absolute';
-            const highZIndex = parseInt(style.zIndex) > 9000;
-
-            // If it's a fixed/absolute positioned element with high z-index added after page load
-            if ((isFixed || isAbsolute) && highZIndex && !el.id && !el.className.includes('menu') && !el.className.includes('overlay')) {
-                const src = el.querySelector('iframe, a[target="_blank"]');
-                if (src || el.tagName === 'A') {
-                    console.log('[AdBlock] Removed suspicious overlay:', el.tagName);
-                    el.remove();
-                }
-            }
-        });
-    }
-
-    // Watch for dynamically injected elements
-    const observer = new MutationObserver(mutations => {
-        mutations.forEach(mutation => {
-            mutation.addedNodes.forEach(node => {
-                if (node.nodeType !== 1) return; // Only element nodes
-
-                // If an iframe was added outside the player, remove it
-                if (node.tagName === 'IFRAME' && !isPlayerIframe(node)) {
-                    console.log('[AdBlock] Blocked injected iframe:', node.src || '(no src)');
-                    node.remove();
-                    return;
-                }
-
-                // If a script tag with ad-related src is added, block it
-                if (node.tagName === 'SCRIPT') {
-                    const src = node.src || '';
-                    if (isAdUrl(src)) {
-                        console.log('[AdBlock] Blocked ad script:', src);
-                        node.remove();
-                        return;
-                    }
-                }
-
-                // Check for iframes within added containers
-                if (node.querySelectorAll) {
-                    node.querySelectorAll('iframe').forEach(iframe => {
-                        if (!isPlayerIframe(iframe)) {
-                            console.log('[AdBlock] Blocked nested iframe:', iframe.src || '(no src)');
-                            iframe.remove();
-                        }
-                    });
-                }
-            });
-        });
-    });
-
-    observer.observe(document.documentElement, {
-        childList: true,
-        subtree: true
-    });
-
-    // Run cleanup periodically as a fallback
-    setInterval(() => {
-        cleanupIframes();
-        cleanupOverlays();
-    }, 2000);
-
-    // Initial cleanup
-    cleanupIframes();
-})();
+    // Sandbox attribute 
+    playerContainer.innerHTML = `
+        <iframe
+            src="${src}"
+            allowfullscreen
+            allow="autoplay; encrypted-media; picture-in-picture"
+            loading="lazy"
+            referrerpolicy="no-referrer"
+            style="width:100%; height:500px; border:none; border-radius:12px;"
+        ></iframe>
+    `;
+}
 
         /**
          * Toggles the visibility of the side menu and its overlay.
@@ -1529,11 +1066,5 @@ searchInput.addEventListener('keypress', (e) => {
 
   
     </script>
-
-    <!-- Footer -->
-    <footer style="background-color: rgba(0,0,0,0.8); padding: 20px 0; text-align: center; color: #555; font-size: 0.85rem; margin-top: 40px; border-top: 1px solid #222; position: relative; z-index: 10;">
-        <p style="margin: 0;">&copy; 2026 <a href="index" style="color: #00ffff; text-decoration: none;">Mooov</a>. All rights reserved.</p>
-        <p style="margin: 5px 0 0;"><a href="movies" style="color: #888; text-decoration: none; margin: 0 10px;">Movies</a> | <a href="tvshows" style="color: #888; text-decoration: none; margin: 0 10px;">TV Shows</a></p>
-    </footer>
 </body>
 </html>

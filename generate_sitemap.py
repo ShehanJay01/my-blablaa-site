@@ -1,21 +1,16 @@
 import requests
 import os
-import re
 import xml.etree.ElementTree as ET
 import html
 from datetime import datetime
 
-# API URLs — Movies: pages 1-5, TV: page 1 only
-API_CONFIG = []
-
-# Movies: fetch pages 1-5 for more coverage
-for page in range(1, 6):
-    API_CONFIG.append({"url": f"https://stmap.mooov.online/movie/popular?language=en-US&page={page}", "type": "movie"})
-    API_CONFIG.append({"url": f"https://stmap.mooov.online/movie/top_rated?language=en-US&page={page}", "type": "movie"})
-
-# TV Shows: page 1 only
-API_CONFIG.append({"url": "https://stmap.mooov.online/tv/popular?language=en-US&page=1", "type": "tv"})
-API_CONFIG.append({"url": "https://stmap.mooov.online/tv/top_rated?language=en-US&page=1", "type": "tv"})
+# API URLs
+API_CONFIG = [
+    {"url": "https://stmap.mooov.online/movie/popular?language=en-US&page=1", "type": "movie"},
+    {"url": "https://stmap.mooov.online/movie/top_rated?language=en-US&page=1", "type": "movie"},
+    {"url": "https://stmap.mooov.online/tv/popular?language=en-US&page=1", "type": "tv"},
+    {"url": "https://stmap.mooov.online/tv/top_rated?language=en-US&page=1", "type": "tv"}
+]
 
 BASE_URL = "https://mooov.online"
 SITEMAP_FILE = "sitemap.xml"
@@ -25,7 +20,7 @@ def generate_sitemap():
     url_date_map = {} # URL
 
     try:
-        # 1. Read existing sitemap but skip old-format URLs (without title)
+        # 1.
         if os.path.exists(SITEMAP_FILE):
             try:
                 tree = ET.parse(SITEMAP_FILE)
@@ -36,10 +31,6 @@ def generate_sitemap():
                     lastmod = url_tag.find('ns:lastmod', ns)
                     
                     clean_url = html.unescape(loc)
-                    # Skip old-format URLs that don't have 'title=' parameter
-                    if 'movie?id=' in clean_url and 'title=' not in clean_url:
-                        print(f"Skipping old-format URL: {clean_url}")
-                        continue
                     # 
                     if lastmod is not None:
                         url_date_map[clean_url] = lastmod.text
@@ -65,9 +56,7 @@ def generate_sitemap():
                 for item in results:
                     item_id = item.get('id')
                     if item_id:
-                        title = item.get('title') or item.get('name') or 'Unknown'
-                        seo_title = re.sub(r'[^a-z0-9]+', '-', title.lower()).strip('-')
-                        item_url = f"{BASE_URL}/movie?title={seo_title}&id={item_id}&type={config['type']}"
+                        item_url = f"{BASE_URL}/{config['type']}?id={item_id}&type={config['type']}"
                         # URL
                         if item_url not in url_date_map:
                             url_date_map[item_url] = today
