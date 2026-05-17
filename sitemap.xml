@@ -461,6 +461,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://mooov.online/movie?id=1582770&amp;type=movie</loc>
+    <lastmod>2026-05-17</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://mooov.online/movie?id=1601797&amp;type=movie</loc>
     <lastmod>2026-04-29</lastmod>
     <priority>0.8</priority>
@@ -881,6 +886,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://mooov.online/movie?id=938150&amp;type=movie</loc>
+    <lastmod>2026-05-17</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://mooov.online/movie?id=976912&amp;type=movie</loc>
     <lastmod>2026-05-12</lastmod>
     <priority>0.8</priority>
@@ -1003,6 +1013,11 @@
   <url>
     <loc>https://mooov.online/tv?id=250307&amp;type=tv</loc>
     <lastmod>2026-04-29</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mooov.online/tv?id=273240&amp;type=tv</loc>
+    <lastmod>2026-05-17</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
