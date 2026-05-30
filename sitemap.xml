@@ -356,6 +356,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://mooov.online/movie?id=1302007&amp;type=movie</loc>
+    <lastmod>2026-05-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://mooov.online/movie?id=1303055&amp;type=movie</loc>
     <lastmod>2026-04-29</lastmod>
     <priority>0.8</priority>
@@ -378,6 +383,11 @@
   <url>
     <loc>https://mooov.online/movie?id=1316092&amp;type=movie</loc>
     <lastmod>2026-04-29</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mooov.online/movie?id=1316427&amp;type=movie</loc>
+    <lastmod>2026-05-30</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
@@ -736,6 +746,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://mooov.online/movie?id=235271&amp;type=movie</loc>
+    <lastmod>2026-05-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://mooov.online/movie?id=238&amp;type=movie</loc>
     <lastmod>2026-04-29</lastmod>
     <priority>0.8</priority>
@@ -1046,6 +1061,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://mooov.online/movie?id=758308&amp;type=movie</loc>
+    <lastmod>2026-05-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://mooov.online/movie?id=769&amp;type=movie</loc>
     <lastmod>2026-04-29</lastmod>
     <priority>0.8</priority>
@@ -1118,6 +1138,11 @@
   <url>
     <loc>https://mooov.online/movie?id=855435&amp;type=movie</loc>
     <lastmod>2026-05-14</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mooov.online/movie?id=879945&amp;type=movie</loc>
+    <lastmod>2026-05-30</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
@@ -1278,6 +1303,11 @@
   <url>
     <loc>https://mooov.online/tv?id=234763&amp;type=tv</loc>
     <lastmod>2026-05-02</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mooov.online/tv?id=2354&amp;type=tv</loc>
+    <lastmod>2026-05-30</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
