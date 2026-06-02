@@ -901,6 +901,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://mooov.online/movie?id=405818&amp;type=movie</loc>
+    <lastmod>2026-06-02</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://mooov.online/movie?id=412201&amp;type=movie</loc>
     <lastmod>2026-05-01</lastmod>
     <priority>0.8</priority>
@@ -1333,6 +1338,11 @@
   <url>
     <loc>https://mooov.online/tv?id=2261&amp;type=tv</loc>
     <lastmod>2026-05-31</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mooov.online/tv?id=22980&amp;type=tv</loc>
+    <lastmod>2026-06-02</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
